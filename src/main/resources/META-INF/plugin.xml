@@ -1,0 +1,28 @@
+<idea-plugin>
+    <id>com.myth.earth.earth-develop-tool</id>
+    <name>Earth Develop Tool</name>
+    <vendor email="zhouchao151724@163.com" url="https://github.com/sirzc">zhou chao</vendor>
+
+    <description>
+        <![CDATA[
+            开发小助手，收录一些不常用但是要用的工具.<br>
+            <em>功能一</em>
+            <em>功能二</em>
+            <em>功能三</em>
+            <em>功能四</em>
+            <em>功能五</em>
+        ]]>
+    </description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <idea-version since-build="192.*"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+    </extensions>
+
+    <actions>
+
+    </actions>
+</idea-plugin>
