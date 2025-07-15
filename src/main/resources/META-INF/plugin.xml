@@ -6,7 +6,7 @@
     <description>
         <![CDATA[
             开发小助手，收录一些不常用但是要用的工具.<br>
-            <em>功能一</em>
+            <em>Mybatis控制台日志转Sql</em>
             <em>功能二</em>
             <em>功能三</em>
             <em>功能四</em>
@@ -19,10 +19,16 @@
     <idea-version since-build="192.*"/>
 
     <extensions defaultExtensionNs="com.intellij">
-
+<!--        <consoleActionsPostProcessor implementation="com.myth.earth.GenerateSQLAction"/>-->
     </extensions>
 
     <actions>
-
+        <!-- 控制台右键菜单 -->
+        <action id="GenerateSQLFromMyBatisLog"
+                class="com.myth.earth.GenerateSQLAction"
+                text="Generate SQL"
+                description="Generate SQL from selected MyBatis log">
+            <add-to-group group-id="ConsoleEditorPopupMenu" anchor="first"/>
+        </action>
     </actions>
 </idea-plugin>
