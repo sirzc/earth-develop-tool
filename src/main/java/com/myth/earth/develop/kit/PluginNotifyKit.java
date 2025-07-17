@@ -15,9 +15,13 @@
 
 package com.myth.earth.develop.kit;
 
-import com.intellij.notification.*;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationGroupManager;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,6 +70,10 @@ public class PluginNotifyKit {
         notify(project, message, NotificationType.WARNING);
     }
 
+    public static void warn(@NotNull Project project, @NotNull String title, @NotNull String message) {
+        notify(project, title, message, NotificationType.WARNING);
+    }
+
     /**
      * 发送一个气球 错误
      *
@@ -87,6 +95,10 @@ public class PluginNotifyKit {
         NOTIFICATION_GROUP.createNotification(message, notificationType).notify(project);
     }
 
+    private static void notify(@NotNull Project project, @NotNull String title,  @NotNull String message, NotificationType notificationType) {
+        NOTIFICATION_GROUP.createNotification(title, message, notificationType).notify(project);
+    }
+
     /**
      * 通知增强，快速实现一个包含标题、内容、行为的信息通知
      *
@@ -102,5 +114,17 @@ public class PluginNotifyKit {
         Optional.ofNullable(icon).ifPresent(notification::setIcon);
         Optional.ofNullable(action).ifPresent(notification::addAction);
         notification.notify(project);
+    }
+
+
+    public static void warn(String title) {
+        warn(title, null);
+    }
+
+    public static void warn(String title, String content) {
+        @NotNull Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
+        if (openProjects.length > 0) {
+            warn(openProjects[0], title, content);
+        }
     }
 }

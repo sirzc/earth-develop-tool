@@ -21,7 +21,7 @@
     <description>
         <![CDATA[
             开发小助手，收录一些不常用但是要用的工具.<br>
-            <em>功能一</em>
+            <em>Mybatis控制台日志转Sql</em>
             <em>功能二</em>
             <em>功能三</em>
             <em>功能四</em>
@@ -35,13 +35,19 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup displayType="BALLOON" id="EarthDevelopTool.Notify"/>
+
         <statusBarWidgetFactory id="EarthDevelopTool.StatusBarWidget" order="first"
-                                implementation="com.myth.earth.develop.extensions.DevelopToolStatusBarWidgetFactory"
-        />
+                                implementation="com.myth.earth.develop.extensions.DevelopToolStatusBarWidgetFactory"/>
 
     </extensions>
 
     <actions>
-
+        <!-- 控制台右键菜单 -->
+        <action id="EarthDevelopTool.GenerateSQLFromMyBatisLog"
+                class="com.myth.earth.develop.action.GenerateSQLAction"
+                text="Generate SQL"
+                description="Generate SQL from selected MyBatis log">
+            <add-to-group group-id="ConsoleEditorPopupMenu" anchor="first"/>
+        </action>
     </actions>
 </idea-plugin>
