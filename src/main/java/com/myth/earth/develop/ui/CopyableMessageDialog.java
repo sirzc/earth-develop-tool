@@ -1,4 +1,4 @@
-package com.myth.earth;
+package com.myth.earth.develop.ui;
 
 import com.intellij.openapi.ui.DialogWrapper;
 

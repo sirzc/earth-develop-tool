@@ -42,8 +42,8 @@
 
     <actions>
         <!-- 控制台右键菜单 -->
-        <action id="GenerateSQLFromMyBatisLog"
-                class="com.myth.earth.GenerateSQLAction"
+        <action id="EarthDevelopTool.GenerateSQLFromMyBatisLog"
+                class="com.myth.earth.develop.action.GenerateSQLAction"
                 text="Generate SQL"
                 description="Generate SQL from selected MyBatis log">
             <add-to-group group-id="ConsoleEditorPopupMenu" anchor="first"/>
