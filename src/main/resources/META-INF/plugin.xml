@@ -34,6 +34,7 @@
     <idea-version since-build="201.6668.113"/>
 
     <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup displayType="BALLOON" id="EarthDevelopTool.Notify"/>
         <statusBarWidgetFactory id="EarthDevelopTool.StatusBarWidget" order="first"
                                 implementation="com.myth.earth.develop.extensions.DevelopToolStatusBarWidgetFactory"
         />
