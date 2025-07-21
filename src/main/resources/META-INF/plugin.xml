@@ -31,7 +31,7 @@
 
     <depends>com.intellij.modules.platform</depends>
 
-    <idea-version since-build="201.6668.113"/>
+    <idea-version since-build="212.4746.92"/>
 
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup displayType="BALLOON" id="EarthDevelopTool.Notify"/>

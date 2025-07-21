@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.Project;
 import com.myth.earth.develop.kit.PluginNotifyKit;
 import com.myth.earth.develop.service.logtosql.MybatisLogParser;
 import com.myth.earth.develop.ui.CopyableMessageDialog;
@@ -19,14 +20,15 @@ public class GenerateSQLAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+        Project project = e.getProject();
         Editor editor = e.getData(CommonDataKeys.EDITOR);
-        if (editor == null) {
+        if (project == null || editor == null) {
             return;
         }
 
         String selectedText = editor.getSelectionModel().getSelectedText();
         if (selectedText == null || selectedText.isEmpty()) {
-            PluginNotifyKit.warn("Selected text is empty", "Please select mybatis log to proceed.");
+            PluginNotifyKit.warn(project, "Selected text is empty", "Please select mybatis log to proceed.");
             return;
         }
 

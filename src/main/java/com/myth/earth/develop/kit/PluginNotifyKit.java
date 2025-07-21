@@ -115,16 +115,4 @@ public class PluginNotifyKit {
         Optional.ofNullable(action).ifPresent(notification::addAction);
         notification.notify(project);
     }
-
-
-    public static void warn(String title) {
-        warn(title, null);
-    }
-
-    public static void warn(String title, String content) {
-        @NotNull Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
-        if (openProjects.length > 0) {
-            warn(openProjects[0], title, content);
-        }
-    }
 }
