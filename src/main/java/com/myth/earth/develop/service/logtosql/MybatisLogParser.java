@@ -1,7 +1,6 @@
 package com.myth.earth.develop.service.logtosql;
 
-import com.myth.earth.develop.kit.PluginNotifyKit;
-import lombok.extern.slf4j.Slf4j;
+import com.intellij.openapi.diagnostic.Logger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,9 +11,9 @@ import java.util.regex.Pattern;
  * @author Inger
  * @since 2025/7/15
  */
-@Slf4j
 public class MybatisLogParser {
 
+    private static final Logger logger = Logger.getInstance(MybatisLogParser.class);
 
     // 判断是否为 MyBatis 日志
     private static boolean isMyBatisLog(String text) {
@@ -40,15 +39,14 @@ public class MybatisLogParser {
 
             return buildSqlString(preparingMatcher, parametersMatcher);
         } catch (Exception e) {
-            log.error("MyBatis Log Parser Error:", e);
-            PluginNotifyKit.warn("MyBatis Log Parser Error", "Please check your consoleLog format.");
+            logger.warn("MyBatis Log Parser Error:", e);
         }
         return "";
     }
 
     private static String buildSqlString(Matcher preparingMatcher, Matcher parametersMatcher) {
         if (!preparingMatcher.find() || !parametersMatcher.find()) {
-            PluginNotifyKit.warn("No sql or parameters from the log", "Please check the selected text.");
+            logger.warn("No sql or parameters from the log, Please check the selected text.");
             return "";
         }
         String sqlTemplate = preparingMatcher.group(1);
