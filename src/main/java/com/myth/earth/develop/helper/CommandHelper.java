@@ -12,7 +12,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package com.myth.earth.develop.helper;
 
 import com.intellij.openapi.util.SystemInfo;
@@ -43,7 +42,7 @@ public class CommandHelper {
     }
 
     private static int getPidByPortOnWindows(int port) throws Exception {
-        Process process = Runtime.getRuntime().exec("netstat -ano | findstr :" + port);
+        Process process = Runtime.getRuntime().exec(new String[] {"cmd.exe", "/c", "netstat -ano | findstr " + port});
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
         while ((line = reader.readLine()) != null) {
