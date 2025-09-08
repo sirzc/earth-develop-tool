@@ -21,10 +21,13 @@ import com.intellij.openapi.wm.IconLikeCustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.ui.components.JBLabel;
 import com.myth.earth.develop.kit.IconKit;
+import com.myth.earth.develop.ui.toolkit.ToolkitProjectService;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * 状态栏小部件具体实现
@@ -43,7 +46,15 @@ public class DevelopToolStatusBarWidget implements IconLikeCustomStatusBarWidget
 
     @Override
     public JComponent getComponent() {
-        return new JBLabel(IconKit.TOOLKIT_16X16);
+        JBLabel jbLabel = new JBLabel(IconKit.TOOLKIT_16X16);
+        jbLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                ToolkitProjectService toolkitProjectService = ToolkitProjectService.getInstance(project);
+                toolkitProjectService.showDialog();
+            }
+        });
+        return jbLabel;
     }
 
     @Override

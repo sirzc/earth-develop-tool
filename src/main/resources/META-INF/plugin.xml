@@ -35,6 +35,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup displayType="BALLOON" id="EarthDevelopTool.Notify"/>
+        <projectService serviceImplementation="com.myth.earth.develop.ui.toolkit.ToolkitProjectService" />
 
         <statusBarWidgetFactory id="EarthDevelopTool.StatusBarWidget" order="first"
                                 implementation="com.myth.earth.develop.extensions.DevelopToolStatusBarWidgetFactory"/>
