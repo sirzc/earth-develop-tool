@@ -16,7 +16,14 @@
 package com.myth.earth.develop.ui.toolkit;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.popup.ComponentPopupBuilder;
+import com.intellij.openapi.ui.popup.JBPopup;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.util.Disposer;
+import com.intellij.util.ui.JBInsets;
 import org.jetbrains.annotations.NotNull;
+
+import java.awt.*;
 
 /**
  * 工具管理服务
@@ -25,12 +32,14 @@ import org.jetbrains.annotations.NotNull;
  * @date 2025-09-08 上午11:31
  */
 public class ToolkitProjectService {
-    private final Project       project;
-    private final ToolkitLoader toolkitLoader;
+    private final Project            project;
+    private final ToolkitLoader      toolkitLoader;
+    private final ToolMainPopupPanel toolMainPopupPanel;
 
     public ToolkitProjectService(@NotNull Project project) {
         this.project = project;
         this.toolkitLoader = new ToolkitLoader(getClass().getPackageName() + ".views");
+        this.toolMainPopupPanel = new ToolMainPopupPanel(project);
     }
 
     public static ToolkitProjectService getInstance(@NotNull Project project) {
@@ -38,6 +47,30 @@ public class ToolkitProjectService {
     }
 
     public void showDialog() {
-        toolkitLoader.listAllTools();
+        ComponentPopupBuilder builder = JBPopupFactory.getInstance()
+                                                      // 弹出内容 + 首选获取焦点的组件
+                                                      .createComponentPopupBuilder(toolMainPopupPanel, toolMainPopupPanel.getSearchField())
+                                                      // .setTitle("class search")
+                                                      .setProject(project)
+                                                      .setModalContext(false)
+                                                      .setCancelOnClickOutside(false)
+                                                      .setRequestFocus(true)
+                                                      .setCancelKeyEnabled(true)
+                                                      // .setCancelOnWindowDeactivation(false)
+                                                      // .setCancelCallback(() -> false)
+                                                      .setCancelOnMouseOutCallback(toolMainPopupPanel)// 鼠标外移回调，仅在mac 全屏下才启作用
+                                                      .addUserData("SIMPLE_WINDOW")
+                                                      .setResizable(true)
+                                                      .setMovable(true)
+                                                      // .setDimensionServiceKey(project,KEY.getName(), true)
+                                                      .setLocateWithinScreenBounds(false);
+        JBPopup listPopup = builder.createPopup();
+        toolMainPopupPanel.refreshPopup(listPopup);
+        Disposer.register(listPopup, toolMainPopupPanel);
+        Dimension size = toolMainPopupPanel.getMinimumSize();
+        JBInsets.addTo(size, listPopup.getContent().getInsets());
+        listPopup.setMinimumSize(size);
+        listPopup.showCenteredInCurrentWindow(project);
+        //listPopup.showInBestPositionFor(dataContext);
     }
 }
