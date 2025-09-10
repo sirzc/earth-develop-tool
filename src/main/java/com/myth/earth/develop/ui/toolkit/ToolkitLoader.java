@@ -117,7 +117,9 @@ public class ToolkitLoader {
                 jarPath = jarPath.substring(1);
             }
 
-            File jarFile = new File(jarPath);
+            // 解决空格问题，将路径中的 %20 转换回空格
+            String decodedPath = jarPath.replace("%20", " ");
+            File jarFile = new File(decodedPath);
             if (!jarFile.exists()) {
                 LOGGER.warn("JAR文件不存在: " + jarPath);
                 return;
