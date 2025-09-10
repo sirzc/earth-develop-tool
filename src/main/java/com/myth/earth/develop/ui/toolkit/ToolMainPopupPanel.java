@@ -24,6 +24,7 @@ import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.MouseChecker;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.ui.*;
+import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
@@ -33,14 +34,23 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import com.intellij.util.ui.tree.TreeUtil;
+import com.myth.earth.develop.ui.toolkit.core.Tool;
+import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
+import com.myth.earth.develop.ui.toolkit.core.ToolView;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -51,29 +61,34 @@ import java.util.function.Consumer;
  */
 public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable, MouseChecker {
 
-    public static final  String          TOOLKIT_TITLE    = "工具箱";
-    private static final Color           LINE_COLOR       = new JBColor(Gray._189, Gray._100);
-    private static final Color           LABEL_BACKGROUND = new JBColor(Gray._234, new Color(69, 73, 74));
-    private final        Project         project;
-    private final        SearchTextField mySearchField;
-    private final        Tree            toolTree;
-    private final        JPanel          toolCustomizerPanel;
-    private final        HintHtmlLabel   hintHtmlLabel;
-    private              boolean         pinWindow;
-    private              JBPopup         showPopup;
+    public static final  String                                                 TOOLKIT_TITLE    = "工具箱";
+    private static final Color                                                  LINE_COLOR       = new JBColor(Gray._189, Gray._100);
+    private static final Color                                                  LABEL_BACKGROUND = new JBColor(Gray._234, new Color(69, 73, 74));
+    private final        Project                                                project;
+    private final        SearchTextField                                        mySearchField;
+    private final        Tree                                                   toolTree;
+    private final        JPanel                                                 toolCustomizerPanel;
+    private final        HintHtmlLabel                                          hintHtmlLabel;
+    private              boolean                                                pinWindow;
+    private              JBPopup                                                showPopup;
+    private              Map<DefaultMutableTreeNode, Class<? extends ToolView>> toolNodeMapper;
 
-    public ToolMainPopupPanel(Project project) {
+    public ToolMainPopupPanel(Project project, Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
         this.project = project;
         this.mySearchField = createSearchField();
+        this.mySearchField.setVisible(false);
         this.toolCustomizerPanel = new JPanel(new BorderLayout());
         this.hintHtmlLabel = createBottomHint();
         this.toolTree = createToolTree();
+        this.toolNodeMapper = new ConcurrentHashMap<>(16);
         initToolTreeAction();
+        initToolTreeData(toolCategoryListMap);
 
         JPanel topLeftPanel = createTopLeftPanel();
         JPanel topRightPanel = createTopRightPanel();
         // 顶部panel
         JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBorder(new CustomLineBorder(JBUI.insetsBottom(1)));
         topPanel.setOpaque(false);
         topPanel.add(topLeftPanel, BorderLayout.WEST);
         topPanel.add(topRightPanel, BorderLayout.EAST);
@@ -87,7 +102,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         toolTreeScroll.setBorder(BorderFactory.createEmptyBorder());
         toolTreeScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         // 左右可调整面板
-        OnePixelSplitter onePixelSplitter = new OnePixelSplitter(false, 0.3f, 0.2f, 0.4f);
+        OnePixelSplitter onePixelSplitter = new OnePixelSplitter(false, 0.3f, 0.25f, 0.35f);
         onePixelSplitter.setFirstComponent(toolTreeScroll);
         onePixelSplitter.setSecondComponent(toolCustomizerPanel);
         // 添加内容
@@ -96,18 +111,72 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         addToBottom(hintHtmlLabel);
     }
 
+    private void initToolTreeData(Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
+        DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) toolTree.getModel().getRoot();
+        for (Map.Entry<ToolCategory, List<Class<? extends ToolView>>> entry : toolCategoryListMap.entrySet()) {
+            ToolCategory category = entry.getKey();
+            List<Class<? extends ToolView>> tools = entry.getValue();
+            DefaultMutableTreeNode categoryNode = new DefaultMutableTreeNode(category);
+            for (Class<? extends ToolView> tool : tools) {
+                DefaultMutableTreeNode child = new DefaultMutableTreeNode(tool.getAnnotation(Tool.class));
+                categoryNode.add(child);
+                toolNodeMapper.put(child, tool);
+            }
+            rootNode.add(categoryNode);
+        }
+        TreeUtil.expandAll(toolTree);
+    }
+
     private void initToolTreeAction() {
         TreeUtil.installActions(toolTree);
         create(e -> TreeUtil.moveDown(toolTree)).registerCustomShortcutSet(KeyEvent.VK_DOWN, 0, mySearchField);
         create(e -> TreeUtil.moveUp(toolTree)).registerCustomShortcutSet(KeyEvent.VK_UP, 0, mySearchField);
+        // 添加双击树节点事件
+        toolTree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) toolTree.getLastSelectedPathComponent();
+                    if (selectedNode != null && selectedNode.isLeaf()) {
+                        Class<? extends ToolView> toolViewClass = toolNodeMapper.get(selectedNode);
+                        if (toolViewClass != null) {
+                            // 刷新提示内容
+                            Tool tool = toolViewClass.getAnnotation(Tool.class);
+                            refreshHintContent(tool.name() + ":" +tool.description());
+                            // 展示具体工具内容
+                            ToolkitProjectService toolkitProjectService = ToolkitProjectService.getInstance(project);
+                            ToolView toolView = toolkitProjectService.get(toolViewClass);
+                            refreshToolCustomizerPanel(toolView.view(project));
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private Tree createToolTree() {
-        Tree toolTree = new Tree();
-        toolTree.setRootVisible(false);
-        toolTree.setFocusable(false);
-        toolTree.setFocusCycleRoot(true);
-        return toolTree;
+        Tree tree = new Tree();
+        tree.setRootVisible(false);
+        tree.setFocusable(false);
+        tree.setFocusCycleRoot(true);
+        tree.setRowHeight(25);
+        tree.setCellRenderer(new ColoredTreeCellRenderer() {
+            @Override
+            public void customizeCellRenderer(@NotNull JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+                Object userObject = node.getUserObject();
+                if (userObject instanceof ToolCategory) {
+                    append(((ToolCategory) userObject).getName());
+                    return;
+                }
+
+                if (userObject instanceof Tool) {
+                    append(((Tool) userObject).name());
+                }
+            }
+        });
+        tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("toolkit")));
+        return tree;
     }
 
     protected JPanel createTopLeftPanel() {

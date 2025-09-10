@@ -21,6 +21,7 @@ import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.util.ui.JBInsets;
+import com.myth.earth.develop.ui.toolkit.core.ToolView;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -39,29 +40,29 @@ public class ToolkitProjectService {
     public ToolkitProjectService(@NotNull Project project) {
         this.project = project;
         this.toolkitLoader = new ToolkitLoader(getClass().getPackageName() + ".views");
-        this.toolMainPopupPanel = new ToolMainPopupPanel(project);
+        this.toolMainPopupPanel = new ToolMainPopupPanel(project, toolkitLoader.getAllCategorizedTools());
     }
 
     public static ToolkitProjectService getInstance(@NotNull Project project) {
         return project.getService(ToolkitProjectService.class);
     }
 
+    public ToolView get(Class<? extends ToolView> clz) {
+        return toolkitLoader.getInstance(clz);
+    }
+
+
     public void showDialog() {
         ComponentPopupBuilder builder = JBPopupFactory.getInstance()
                                                       // 弹出内容 + 首选获取焦点的组件
                                                       .createComponentPopupBuilder(toolMainPopupPanel, toolMainPopupPanel.getSearchField())
                                                       // .setTitle("class search")
-                                                      .setProject(project)
-                                                      .setModalContext(false)
-                                                      .setCancelOnClickOutside(false)
-                                                      .setRequestFocus(true)
+                                                      .setProject(project).setModalContext(false).setCancelOnClickOutside(false).setRequestFocus(true)
                                                       .setCancelKeyEnabled(true)
                                                       // .setCancelOnWindowDeactivation(false)
                                                       // .setCancelCallback(() -> false)
                                                       .setCancelOnMouseOutCallback(toolMainPopupPanel)// 鼠标外移回调，仅在mac 全屏下才启作用
-                                                      .addUserData("SIMPLE_WINDOW")
-                                                      .setResizable(true)
-                                                      .setMovable(true)
+                                                      .addUserData("SIMPLE_WINDOW").setResizable(true).setMovable(true)
                                                       // .setDimensionServiceKey(project,KEY.getName(), true)
                                                       .setLocateWithinScreenBounds(false);
         JBPopup listPopup = builder.createPopup();
