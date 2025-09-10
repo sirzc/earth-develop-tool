@@ -32,7 +32,6 @@ import java.awt.*;
 public abstract class AbstractToolView extends JPanel implements ToolView {
 
     protected Project project;
-    protected JPanel  showPanel;
 
     public AbstractToolView() {
         super(new BorderLayout());

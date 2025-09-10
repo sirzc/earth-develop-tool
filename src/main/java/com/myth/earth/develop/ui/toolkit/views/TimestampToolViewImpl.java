@@ -49,9 +49,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
         topPanel.add(extendableTextField, BorderLayout.CENTER);
         // topPanel.add(Box.createHorizontalStrut(200), BorderLayout.EAST);
 
-        showPanel = new JPanel(new BorderLayout());
-        showPanel.add(topPanel, BorderLayout.NORTH);
-        add(showPanel, BorderLayout.CENTER);
+        add(topPanel, BorderLayout.NORTH);
     }
 
     @Override
