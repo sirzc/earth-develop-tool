@@ -135,19 +135,26 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         toolTree.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) toolTree.getLastSelectedPathComponent();
-                    if (selectedNode != null && selectedNode.isLeaf()) {
-                        Class<? extends ToolView> toolViewClass = toolNodeMapper.get(selectedNode);
-                        if (toolViewClass != null) {
-                            // 刷新提示内容
-                            Tool tool = toolViewClass.getAnnotation(Tool.class);
-                            refreshHintContent(tool.name() + "：" +tool.description());
-                            // 展示具体工具内容
-                            ToolkitProjectService toolkitProjectService = ToolkitProjectService.getInstance(project);
-                            ToolView toolView = toolkitProjectService.get(toolViewClass);
-                            refreshToolCustomizerPanel(toolView.refreshView(project));
-                        }
+                DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) toolTree.getLastSelectedPathComponent();
+                if (selectedNode == null) {
+                   return;
+                }
+
+                Object userObject = selectedNode.getUserObject();
+                if (userObject instanceof ToolCategory) {
+                    refreshHintContent(((ToolCategory) userObject).getName());
+                    return;
+                }
+
+                Class<? extends ToolView> toolViewClass = toolNodeMapper.get(selectedNode);
+                if (toolViewClass != null) {
+                    // 刷新提示内容
+                    Tool tool = toolViewClass.getAnnotation(Tool.class);
+                    refreshHintContent(tool.name() + "：" +tool.description());
+                    // 展示具体工具内容
+                    if (e.getClickCount() == 2) {
+                        ToolView toolView = ToolkitProjectService.getInstance(project).get(toolViewClass);
+                        refreshToolCustomizerPanel(toolView.refreshView(project));
                     }
                 }
             }
