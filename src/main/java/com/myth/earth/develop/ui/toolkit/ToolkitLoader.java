@@ -23,6 +23,8 @@ import com.myth.earth.develop.ui.toolkit.core.ToolView;
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
@@ -117,8 +119,8 @@ public class ToolkitLoader {
                 jarPath = jarPath.substring(1);
             }
 
-            // 解决空格问题，将路径中的 %20 转换回空格
-            String decodedPath = jarPath.replace("%20", " ");
+            // 使用 URLDecoder 解码路径，以正确处理空格和特殊字符
+            String decodedPath = URLDecoder.decode(jarPath, StandardCharsets.UTF_8);
             File jarFile = new File(decodedPath);
             if (!jarFile.exists()) {
                 LOGGER.warn("JAR文件不存在: " + jarPath);
