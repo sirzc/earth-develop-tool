@@ -34,5 +34,5 @@ public interface ToolView {
      * @return 视图
      */
     @NotNull
-    JComponent view(@NotNull Project project);
+    JComponent refreshView(@NotNull Project project);
 }

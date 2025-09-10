@@ -142,11 +142,11 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
                         if (toolViewClass != null) {
                             // 刷新提示内容
                             Tool tool = toolViewClass.getAnnotation(Tool.class);
-                            refreshHintContent(tool.name() + ":" +tool.description());
+                            refreshHintContent(tool.name() + "：" +tool.description());
                             // 展示具体工具内容
                             ToolkitProjectService toolkitProjectService = ToolkitProjectService.getInstance(project);
                             ToolView toolView = toolkitProjectService.get(toolViewClass);
-                            refreshToolCustomizerPanel(toolView.view(project));
+                            refreshToolCustomizerPanel(toolView.refreshView(project));
                         }
                     }
                 }
@@ -196,12 +196,13 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.addAction(new FixedWindowAction());
         ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_POPUP + ".toolkit.main.toolbar", actionGroup, true);
+        toolbar.setTargetComponent(this);
         toolbar.setLayoutPolicy(ActionToolbar.NOWRAP_LAYOUT_POLICY);
-
         toolbar.updateActionsImmediately();
+
         JComponent toolbarComponent = toolbar.getComponent();
         toolbarComponent.setOpaque(false);
-        toolbarComponent.setBorder(JBUI.Borders.empty(2, 18, 2, 9));
+        toolbarComponent.setBorder(JBUI.Borders.empty(2, 18, 2, 2));
         res.add(toolbarComponent);
         return res;
     }

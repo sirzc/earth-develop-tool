@@ -16,9 +16,7 @@
 package com.myth.earth.develop.ui.toolkit.views;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.JBUI;
-import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,21 +32,22 @@ import java.awt.*;
 public abstract class AbstractToolView extends JPanel implements ToolView {
 
     protected Project project;
+    protected JPanel  showPanel;
 
     public AbstractToolView() {
         super(new BorderLayout());
         setBorder(JBUI.Borders.empty(5));
+        // Tool tool = this.getClass().getAnnotation(Tool.class);
+        // String title = String.format("%s>%s(%s)", tool.category().getName(), tool.name(), tool.description());
+        // add(new JBLabel(title), BorderLayout.NORTH);
     }
 
-    public abstract JComponent centerPanel();
+    public abstract void refreshToolData();
 
     @Override
-    public @NotNull JComponent view(@NotNull Project project) {
+    public @NotNull JComponent refreshView(@NotNull Project project) {
         this.project = project;
-        Tool tool = this.getClass().getAnnotation(Tool.class);
-        String title = String.format("%s>%s(%s)", tool.category().getName(), tool.name(), tool.description());
-        add(new JBLabel(title), BorderLayout.NORTH);
-        add(centerPanel(), BorderLayout.CENTER);
+        refreshToolData();
         return this;
     }
 }
