@@ -266,6 +266,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     }
 
     public void refreshToolCustomizerPanel(@NotNull JComponent component) {
+        toolCustomizerPanel.removeAll();
         toolCustomizerPanel.add(component, BorderLayout.CENTER);
         toolCustomizerPanel.updateUI();
     }
