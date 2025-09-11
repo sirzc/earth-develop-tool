@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     implementation 'com.alibaba:fastjson:1.2.83'
+    implementation 'cn.hutool:hutool-core:5.8.35'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
