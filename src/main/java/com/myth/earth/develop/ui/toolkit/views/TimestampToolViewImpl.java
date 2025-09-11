@@ -42,12 +42,12 @@ import java.util.Date;
 import java.util.Set;
 
 /**
- * 示例
+ * 时间戳转换工具
  *
  * @author zhouchao
  * @date 2025-09-07 下午10:23
  */
-@Tool(category = ToolCategory.TIME, name = "时间戳转换", description = "获取时间戳、时间戳转日期时间、日期时间转时间戳")
+@Tool(category = ToolCategory.DEVELOP, name = "时间戳转换", description = "获取时间戳、时间戳转日期时间、日期时间转时间戳")
 public class TimestampToolViewImpl extends AbstractToolView {
 
     private final ExtendableTextField extendableTextField;

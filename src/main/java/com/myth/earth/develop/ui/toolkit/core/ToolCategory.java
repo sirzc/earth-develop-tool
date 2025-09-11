@@ -29,8 +29,8 @@ import javax.swing.*;
 public enum ToolCategory {
 
     DEFAULT("默认", null),
-    NETWORK("网络工具", null),
-    TIME("时间工具", null)
+    DEVELOP("开发工具", null),
+    NETWORK("网络工具", null)
     ;
 
     /**
