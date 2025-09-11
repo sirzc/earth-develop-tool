@@ -66,7 +66,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
         }));
 
         ComboBox<String> timeUnitBox1 = createTimeUnitBox();
-        ComboBox<String> timeZoneBox2 = createTimeZoneBox();
+        ComboBox<String> timeZoneBox1 = createTimeZoneBox();
         JBTextField fromTimeField = createTextField(currentTimeMillis);
         JBTextField toDateField = createTextField(DateUtil.format(currentDate, DatePattern.NORM_DATETIME_PATTERN));
         JButton toDateButton = createButton();
@@ -82,7 +82,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
                     timestamp *= 1000;
                 }
                 // 获取时区
-                String zoneIdStr = (String) timeZoneBox2.getSelectedItem();
+                String zoneIdStr = (String) timeZoneBox1.getSelectedItem();
                 ZoneId zoneId = ZoneId.of(zoneIdStr != null ? zoneIdStr : ZoneId.systemDefault().getId());
                 // 转换为日期时间并显示
                 Instant instant = Instant.ofEpochMilli(timestamp);
@@ -99,7 +99,42 @@ public class TimestampToolViewImpl extends AbstractToolView {
         toDatePanel.add(timeUnitBox1);
         toDatePanel.add(toDateButton);
         toDatePanel.add(toDateField);
-        toDatePanel.add(timeZoneBox2);
+        toDatePanel.add(timeZoneBox1);
+
+        ComboBox<String> timeUnitBox2 = createTimeUnitBox();
+        ComboBox<String> timeZoneBox2 = createTimeZoneBox();
+        JBTextField fromDateTimeField = createTextField(DateUtil.format(currentDate, DatePattern.NORM_DATETIME_PATTERN));
+        JBTextField toTimestampField = createTextField(currentTimeMillis);
+        JButton toTimestampButton = createButton();
+        toTimestampButton.addActionListener(e -> {
+            try {
+                String dateTimeText = fromDateTimeField.getText().trim();
+                if (dateTimeText.isEmpty()) {
+                    return;
+                }
+                // 获取时区
+                String zoneIdStr = (String) timeZoneBox2.getSelectedItem();
+                ZoneId zoneId = ZoneId.of(zoneIdStr != null ? zoneIdStr : ZoneId.systemDefault().getId());
+                // 解析日期时间并转换为时间戳
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DatePattern.NORM_DATETIME_PATTERN);
+                LocalDateTime localDateTime = LocalDateTime.parse(dateTimeText, formatter);
+                long timestamp = localDateTime.atZone(zoneId).toInstant().toEpochMilli();
+                // 根据单位调整时间戳
+                if ("s".equals(timeUnitBox2.getSelectedItem())) {
+                    timestamp /= 1000;
+                }
+                toTimestampField.setText(String.valueOf(timestamp));
+            } catch (Exception ex) {
+                toTimestampField.setText("无效的日期时间");
+            }
+        });
+
+        JPanel toTimestampPanel = new JPanel(new HorizontalLayout());
+        toTimestampPanel.add(fromDateTimeField);
+        toTimestampPanel.add(timeZoneBox2);
+        toTimestampPanel.add(toTimestampButton);
+        toTimestampPanel.add(toTimestampField);
+        toTimestampPanel.add(timeUnitBox2);
 
         @SuppressWarnings("all")
         JPanel centerPanel = FormBuilder.createFormBuilder()
@@ -108,7 +143,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
                                         .addComponent(new JBLabel("时间戳转日期时间"), 20)
                                         .addComponent(toDatePanel)
                                         .addComponent(new JBLabel("日期时间转时间戳"),20)
-                                        .addComponent(new JPanel())
+                                        .addComponent(toTimestampPanel)
                                         .getPanel();
 
         add(centerPanel, BorderLayout.NORTH);
