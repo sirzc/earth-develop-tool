@@ -15,13 +15,16 @@
 
 package com.myth.earth.develop.ui.toolkit.views;
 
+import com.intellij.openapi.actionSystem.impl.ActionButton;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.JBColor;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 /**
  * 封装统一的工具面板内容
@@ -48,5 +51,14 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
         this.project = project;
         refreshToolData();
         return this;
+    }
+
+    @NotNull
+    protected static JButton createButton(String name, ActionListener listener) {
+        JButton button = new JButton(name);
+        // new JBColor(new Color(0, 120, 215), new Color(0, 120, 215))
+        button.setPreferredSize(JBUI.size(50, 35));
+        button.addActionListener(listener);
+        return button;
     }
 }

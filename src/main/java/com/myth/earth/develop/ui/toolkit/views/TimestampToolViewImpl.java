@@ -84,8 +84,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
         ComboBox<String> timeZoneBox2 = createTimeZoneBox();
         JBTextField fromDateTimeField = createTextField(currentDate);
         JBTextField toTimestampField = createTextField(currentTimeMillis);
-        JButton toTimestampButton = createButton();
-        toTimestampButton.addActionListener(e -> {
+        JButton toTimestampButton = createButton("转换", e -> {
             try {
                 String dateTimeText = fromDateTimeField.getText().trim();
                 if (dateTimeText.isEmpty()) {
@@ -122,8 +121,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
         ComboBox<String> timeZoneBox1 = createTimeZoneBox();
         JBTextField fromTimeField = createTextField(currentTimeMillis);
         JBTextField toDateField = createTextField(currentDate);
-        JButton toDateButton = createButton();
-        toDateButton.addActionListener(e -> {
+        JButton toDateButton = createButton("转换", e -> {
             try {
                 String timestampText = fromTimeField.getText().trim();
                 if (timestampText.isEmpty()) {
@@ -159,12 +157,6 @@ public class TimestampToolViewImpl extends AbstractToolView {
     @Override
     public void refreshToolData() {
         extendableTextField.setText(String.valueOf(System.currentTimeMillis()));
-    }
-
-    private static @NotNull JButton createButton() {
-        JButton toDateButton = new JButton("转换");
-        toDateButton.setPreferredSize(JBUI.size(50, 35));
-        return toDateButton;
     }
 
     private static @NotNull JBTextField createTextField(String currentTimeMillis) {

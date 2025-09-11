@@ -39,10 +39,7 @@ public class UUIDToolViewImpl extends AbstractToolView {
         JBTextArea resultArea = new JBTextArea();
         resultArea.setMargin(JBUI.insets(10));
         resultArea.setLineWrap(true);
-        JButton generateButton = new JButton("生成");
-        generateButton.setPreferredSize(JBUI.size(50, 35));
-
-        generateButton.addActionListener(e -> {
+        JButton generateButton = createButton("生成", e -> {
             try {
                 int count = Integer.parseInt(generateNumField.getText());
                 boolean withoutHyphen = selectBox.isSelected();
