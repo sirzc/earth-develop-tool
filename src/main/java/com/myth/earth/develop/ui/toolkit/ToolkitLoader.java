@@ -16,6 +16,7 @@
 package com.myth.earth.develop.ui.toolkit;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
@@ -207,7 +208,7 @@ public class ToolkitLoader {
         }
     }
 
-    public ToolView getInstance(Class<? extends ToolView> clz) {
+    public ToolView getInstance(Project project , Class<? extends ToolView> clz) {
         // 第一次检查缓存（无锁）
         ToolView cachedInstance = instanceMap.get(clz);
         if (cachedInstance != null) {
@@ -222,7 +223,7 @@ public class ToolkitLoader {
                 }
 
                 // 创建新实例并缓存
-                ToolView newInstance = clz.getDeclaredConstructor().newInstance();
+                ToolView newInstance = clz.getDeclaredConstructor(Project.class).newInstance(project);
                 instanceMap.put(clz, newInstance);
                 return newInstance;
             }

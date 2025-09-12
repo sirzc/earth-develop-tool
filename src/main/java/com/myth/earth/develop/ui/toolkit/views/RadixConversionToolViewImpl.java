@@ -1,5 +1,6 @@
 package com.myth.earth.develop.ui.toolkit.views;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
@@ -28,7 +29,8 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
     private final ComboBox<String> fromRadixBox;
     private final ComboBox<String> toRadixBox;
 
-    public RadixConversionToolViewImpl() {
+    public RadixConversionToolViewImpl(@NotNull Project project) {
+        super(project);
         // 创建输入和输出文本区域
         inputTextArea = new JBTextArea();
         inputTextArea.setMargin(JBUI.insets(5));

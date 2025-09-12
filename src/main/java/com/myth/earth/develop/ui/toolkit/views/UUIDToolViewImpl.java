@@ -15,10 +15,12 @@
 
 package com.myth.earth.develop.ui.toolkit.views;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.*;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +35,8 @@ import java.util.UUID;
 @Tool(category = ToolCategory.DEVELOP, name = "UUID生成器", description = "批量生成UUID、带-、不带-")
 public class UUIDToolViewImpl extends AbstractToolView {
 
-    public UUIDToolViewImpl() {
+    public UUIDToolViewImpl(@NotNull Project project) {
+        super(project);
         JBTextField generateNumField = new JBTextField("1");
         JBCheckBox selectBox = new JBCheckBox("不带-");
         JBTextArea resultArea = new JBTextArea();

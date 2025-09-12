@@ -150,7 +150,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
                             refreshHintContent(tool.name() + "：" +tool.description());
                             // 展示具体工具内容
                             ToolView toolView = ToolkitProjectService.getInstance(project).get(toolViewClass);
-                            refreshToolCustomizerPanel(toolView.refreshView(project));
+                            refreshToolCustomizerPanel(toolView.refreshView());
                         }
                     }
                 });
@@ -209,7 +209,9 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
                     refreshHintContent(tool.name() + "：" +tool.description());
                     // 展示具体工具内容
                     ToolView toolView = ToolkitProjectService.getInstance(project).get(toolViewClass);
-                    refreshToolCustomizerPanel(toolView.refreshView(project));
+                    if (toolView != null) {
+                        refreshToolCustomizerPanel(toolView.refreshView());
+                    }
                 }
             }
         });

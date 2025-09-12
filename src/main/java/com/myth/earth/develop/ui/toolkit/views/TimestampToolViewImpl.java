@@ -18,6 +18,7 @@ package com.myth.earth.develop.ui.toolkit.views;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
@@ -52,7 +53,8 @@ public class TimestampToolViewImpl extends AbstractToolView {
 
     private final ExtendableTextField extendableTextField;
 
-    public TimestampToolViewImpl() {
+    public TimestampToolViewImpl(@NotNull Project project) {
+        super(project);
         Date date = new Date();
         String currentDate = DateUtil.format(date, DatePattern.NORM_DATETIME_PATTERN);
         String currentTimeMillis = String.valueOf(date.getTime());
@@ -66,15 +68,14 @@ public class TimestampToolViewImpl extends AbstractToolView {
         JPanel toDatePanel = createToDatePanel(currentDate, currentTimeMillis);
         JPanel toTimestampPanel = createTimestampPanel(currentDate, currentTimeMillis);
 
-        @SuppressWarnings("all")
-        JPanel centerPanel = FormBuilder.createFormBuilder()
-                                        .addComponent(new JBLabel("当前时间戳"))
-                                        .addComponent(extendableTextField)
-                                        .addComponent(new JBLabel("时间戳转日期时间"), 20)
-                                        .addComponent(toDatePanel)
-                                        .addComponent(new JBLabel("日期时间转时间戳"),20)
-                                        .addComponent(toTimestampPanel)
-                                        .getPanel();
+        @SuppressWarnings("all") JPanel centerPanel = FormBuilder.createFormBuilder()
+                                                                 .addComponent(new JBLabel("当前时间戳"))
+                                                                 .addComponent(extendableTextField)
+                                                                 .addComponent(new JBLabel("时间戳转日期时间"), 20)
+                                                                 .addComponent(toDatePanel)
+                                                                 .addComponent(new JBLabel("日期时间转时间戳"), 20)
+                                                                 .addComponent(toTimestampPanel)
+                                                                 .getPanel();
 
         add(centerPanel, BorderLayout.NORTH);
     }

@@ -35,7 +35,7 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
     private final JPanel  rootPanel;
     protected     Project project;
 
-    public AbstractToolView() {
+    public AbstractToolView(@NotNull Project project) {
         super(new BorderLayout());
         setBorder(JBUI.Borders.empty(5));
         // Tool tool = this.getClass().getAnnotation(Tool.class);
@@ -53,8 +53,7 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
     }
 
     @Override
-    public @NotNull JComponent refreshView(@NotNull Project project) {
-        this.project = project;
+    public @NotNull JComponent refreshView() {
         refreshToolData();
         return rootPanel;
     }

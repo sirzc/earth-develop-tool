@@ -48,7 +48,7 @@ public class ToolkitProjectService {
     }
 
     public ToolView get(Class<? extends ToolView> clz) {
-        return toolkitLoader.getInstance(clz);
+        return toolkitLoader.getInstance(project, clz);
     }
 
 
