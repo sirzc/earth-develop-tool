@@ -16,6 +16,7 @@
 package com.myth.earth.develop.ui.toolkit.views;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
 import org.jetbrains.annotations.NotNull;
@@ -65,5 +66,15 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
         button.setPreferredSize(JBUI.size(50, 35));
         button.addActionListener(listener);
         return button;
+    }
+
+    @NotNull
+    protected static  JBTextArea createTextArea() {
+        JBTextArea dataUriTextArea = new JBTextArea();
+        dataUriTextArea.setMargin(JBUI.insets(5));
+        dataUriTextArea.setEditable(false);
+        dataUriTextArea.setLineWrap(true);
+        dataUriTextArea.setWrapStyleWord(true);
+        return dataUriTextArea;
     }
 }

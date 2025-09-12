@@ -30,9 +30,9 @@ public enum ToolCategory {
 
     DEFAULT("默认", null),
     DEVELOP("开发工具", null),
+    NUMBER("数字工具", null),
     NETWORK("网络工具", null),
-    IMAGE("图像工具", null),
-    NUMBER("数字工具", null)
+    IMAGE("图像工具", null)
     ;
 
     /**
