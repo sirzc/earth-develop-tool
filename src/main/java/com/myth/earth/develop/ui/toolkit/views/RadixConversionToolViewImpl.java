@@ -33,11 +33,11 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
         super(project);
         // 创建输入和输出文本区域
         inputTextArea = new JBTextArea();
-        inputTextArea.setMargin(JBUI.insets(5));
+        inputTextArea.setMargin(JBUI.insets(10));
         inputTextArea.setToolTipText("输入需要转换的数值，每行一个");
 
         outputTextArea = new JBTextArea();
-        inputTextArea.setMargin(JBUI.insets(5));
+        outputTextArea.setMargin(JBUI.insets(10));
         outputTextArea.setEditable(false);
 
         // 创建进制选择框
