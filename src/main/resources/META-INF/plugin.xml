@@ -54,5 +54,9 @@
         <action class="com.myth.earth.develop.action.ReleasePortAction" text="Release Port">
             <add-to-group group-id="ConsoleEditorPopupMenu" anchor="first" />
         </action>
+
+        <action id="EarthDevelopTool.QuickOpenToolkit" class="com.myth.earth.develop.action.QuickOpenToolKitAction" >
+            <keyboard-shortcut keymap="$default" first-keystroke="alt F2"/>
+        </action>
     </actions>
 </idea-plugin>
