@@ -39,9 +39,7 @@ public class UUIDToolViewImpl extends AbstractToolView {
         super(project);
         JBTextField generateNumField = new JBTextField("1");
         JBCheckBox selectBox = new JBCheckBox("不带-");
-        JBTextArea resultArea = new JBTextArea();
-        resultArea.setMargin(JBUI.insets(10));
-        resultArea.setLineWrap(true);
+        JBTextArea resultArea = createTextArea();
         JButton generateButton = createButton("生成", e -> {
             try {
                 int count = Integer.parseInt(generateNumField.getText());
