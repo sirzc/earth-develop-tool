@@ -15,9 +15,7 @@
 
 package com.myth.earth.develop.ui.toolkit.views;
 
-import com.intellij.openapi.actionSystem.impl.ActionButton;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.JBColor;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +32,8 @@ import java.awt.event.ActionListener;
  */
 public abstract class AbstractToolView extends JPanel implements ToolView {
 
-    protected Project project;
+    private final JPanel  rootPanel;
+    protected     Project project;
 
     public AbstractToolView() {
         super(new BorderLayout());
@@ -42,6 +41,8 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
         // Tool tool = this.getClass().getAnnotation(Tool.class);
         // String title = String.format("%s>%s(%s)", tool.category().getName(), tool.name(), tool.description());
         // add(new JBLabel(title), BorderLayout.NORTH);
+        rootPanel = new JPanel(new BorderLayout());
+        rootPanel.add(this, BorderLayout.CENTER);
     }
 
     public abstract void refreshToolData();
@@ -50,7 +51,7 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
     public @NotNull JComponent refreshView(@NotNull Project project) {
         this.project = project;
         refreshToolData();
-        return this;
+        return rootPanel;
     }
 
     @NotNull
