@@ -1,11 +1,9 @@
 package com.myth.earth.develop.ui.toolkit.views;
 
-import com.intellij.ide.plugins.newui.HorizontalLayout;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
-import com.intellij.ui.components.panels.VerticalLayout;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
@@ -25,19 +23,19 @@ import java.math.BigInteger;
 @Tool(category = ToolCategory.NUMBER, name = "进制转换", description = "数值二进制、八进制、十进制、十六进制转换")
 public class RadixConversionToolViewImpl extends AbstractToolView {
 
-    private final JBTextArea inputTextArea;
-    private final JBTextArea outputTextArea;
+    private final JBTextArea       inputTextArea;
+    private final JBTextArea       outputTextArea;
     private final ComboBox<String> fromRadixBox;
     private final ComboBox<String> toRadixBox;
 
     public RadixConversionToolViewImpl() {
         // 创建输入和输出文本区域
         inputTextArea = new JBTextArea();
-        inputTextArea.setPreferredSize(JBUI.size(200, 150));
+        inputTextArea.setMargin(JBUI.insets(5));
         inputTextArea.setToolTipText("输入需要转换的数值，每行一个");
 
         outputTextArea = new JBTextArea();
-        outputTextArea.setPreferredSize(JBUI.size(200, 150));
+        inputTextArea.setMargin(JBUI.insets(5));
         outputTextArea.setEditable(false);
 
         // 创建进制选择框
@@ -49,34 +47,29 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
         toRadixBox.setSelectedItem("16");
 
         // 创建转换按钮
-        JButton convertButton = new JButton("转换");
-        convertButton.setPreferredSize(JBUI.size(60, 35));
-        convertButton.addActionListener(e -> convert());
+        JButton convertButton = createButton("转换", e -> convert());
 
         // 创建面板布局
-        JPanel controlPanel = new JPanel(new HorizontalLayout(10));
-        controlPanel.add(new JBLabel("从:"));
-        controlPanel.add(fromRadixBox);
-        controlPanel.add(new JBLabel("到:"));
-        controlPanel.add(toRadixBox);
-        controlPanel.add(convertButton);
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topPanel.add(new JBLabel("从:"));
+        topPanel.add(fromRadixBox);
+        topPanel.add(new JBLabel("到:"));
+        topPanel.add(toRadixBox);
+        topPanel.add(convertButton);
 
-        JPanel inputPanel = new JPanel(new VerticalLayout(5));
-        inputPanel.add(new JBLabel("输入数值（每行一个）:"));
-        inputPanel.add(new JBScrollPane(inputTextArea));
+        JPanel centerPanel = FormBuilder.createFormBuilder()
+                                        .setVerticalGap(5)
+                                        .addLabeledComponent(new JLabel("输入数值（每行一个）:"), new JBScrollPane(inputTextArea), true)
+                                        .addLabeledComponent(new JLabel("转换结果:"), new JBScrollPane(outputTextArea), true)
+                                        .getPanel();
 
-        JPanel outputPanel = new JPanel(new VerticalLayout(5));
-        outputPanel.add(new JBLabel("转换结果:"));
-        outputPanel.add(new JBScrollPane(outputTextArea));
-
-        JPanel mainPanel = FormBuilder.createFormBuilder()
-                .addComponent(controlPanel)
-                .addComponent(inputPanel, 10)
-                .addComponent(outputPanel, 10)
-                .getPanel();
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         add(mainPanel, BorderLayout.CENTER);
     }
+
     private void convert() {
         String input = inputTextArea.getText();
         if (input == null || input.trim().isEmpty()) {
@@ -116,8 +109,6 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
 
         outputTextArea.setText(result.toString());
     }
-
-
 
     private String extractCoreValue(String line, int radix) {
         if (line.isEmpty()) {
@@ -182,10 +173,7 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
             case 10: // 十进制: 0-9
                 return c >= '0' && c <= '9';
             case 16: // 十六进制: 0-9, A-F, a-f
-                return (c >= '0' && c <= '9') ||
-                        (c >= 'A' && c <= 'F') ||
-                        (c >= 'a' && c <= 'f') ||
-                        c == 'x' || c == 'X';
+                return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') || c == 'x' || c == 'X';
             default:
                 return false;
         }
@@ -205,6 +193,5 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
         comboBox.addItem("16");
         return comboBox;
     }
-
 
 }
