@@ -22,7 +22,9 @@ import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.MouseChecker;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.*;
 import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBLabel;
@@ -40,6 +42,7 @@ import com.myth.earth.develop.ui.component.CollapsibleTitledSeparator;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
+import org.apache.commons.lang3.StringUtils;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,6 +58,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -223,12 +227,18 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
                 Object userObject = node.getUserObject();
                 if (userObject instanceof ToolCategory) {
-                    append(((ToolCategory) userObject).getName());
+                    ToolCategory toolCategory = (ToolCategory) userObject;
+                    Optional.ofNullable(toolCategory.getIcon()).ifPresent(this::setIcon);
+                    append(toolCategory.getName());
                     return;
                 }
 
                 if (userObject instanceof Tool) {
-                    append(((Tool) userObject).name());
+                    Tool tool = (Tool) userObject;
+                    if (StringUtil.isNotEmpty(tool.iconPath())) {
+                        setIcon(IconLoader.getIcon(tool.iconPath(), ToolMainPopupPanel.class));
+                    }
+                    append(tool.name());
                 }
             }
         });

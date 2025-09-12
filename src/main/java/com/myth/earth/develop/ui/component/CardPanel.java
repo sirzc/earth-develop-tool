@@ -62,7 +62,7 @@ public class CardPanel extends JBPanel<CardPanel> {
         summeryTextArea.setText(tool.description());
 
         JPanel leftInfoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        leftInfoPanel.setBorder(JBUI.Borders.empty(7, 5, 0, 0));
+        leftInfoPanel.setBorder(JBUI.Borders.empty(5, 5, 0, 0));
         leftInfoPanel.add(toolLabel);
 
         JPanel topPanel = new JPanel(new BorderLayout());
