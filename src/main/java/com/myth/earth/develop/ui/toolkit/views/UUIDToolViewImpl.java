@@ -73,9 +73,4 @@ public class UUIDToolViewImpl extends AbstractToolView {
         add(topPanel, BorderLayout.NORTH);
         add(jbScrollPane, BorderLayout.CENTER);
     }
-
-    @Override
-    public void refreshToolData() {
-
-    }
 }

@@ -179,11 +179,6 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
         }
     }
 
-    @Override
-    public void refreshToolData() {
-        // 进制转换工具不需要定期刷新
-    }
-
     private static @NotNull ComboBox<String> createRadixBox() {
         ComboBox<String> comboBox = new ComboBox<>();
         comboBox.setPreferredSize(JBUI.size(60, 35));

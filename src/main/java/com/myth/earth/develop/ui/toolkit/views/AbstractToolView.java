@@ -45,7 +45,12 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
         rootPanel.add(this, BorderLayout.CENTER);
     }
 
-    public abstract void refreshToolData();
+    /**
+     * 显示内容时刷新数据
+     */
+    public void refreshToolData() {
+        // 需要点击菜单刷新数据的可重写此方法
+    }
 
     @Override
     public @NotNull JComponent refreshView(@NotNull Project project) {
