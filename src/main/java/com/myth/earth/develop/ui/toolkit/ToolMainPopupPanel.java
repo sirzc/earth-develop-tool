@@ -75,6 +75,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     private final        JPanel                                                 toolCustomizerPanel;
     private final        HintHtmlLabel                                          hintHtmlLabel;
     private final        Map<DefaultMutableTreeNode, Class<? extends ToolView>> toolNodeMapper;
+    private final        JPanel                                                 welcomePanel;
     private              boolean                                                pinWindow;
     private              JBPopup                                                showPopup;
 
@@ -86,6 +87,8 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         this.hintHtmlLabel = createBottomHint();
         this.toolTree = createToolTree();
         this.toolNodeMapper = new ConcurrentHashMap<>(16);
+        this.welcomePanel = new JPanel(new VerticalLayout());
+        this.welcomePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         initToolTreeAction();
         initToolTreeData(toolCategoryListMap);
         initWelcomePanel(toolCategoryListMap);
@@ -118,8 +121,6 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     }
 
     private void initWelcomePanel(Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
-        JPanel accessPanel = new JPanel(new VerticalLayout());
-        accessPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         for (Map.Entry<ToolCategory, List<Class<? extends ToolView>>> entry : toolCategoryListMap.entrySet()) {
             ToolCategory category = entry.getKey();
             JPanel cardPanels = new JPanel(new WrapLayout(WrapLayout.LEFT, 5, 5));
@@ -156,10 +157,10 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
             titledSeparator.onAction(cardPanels::setVisible);
             titledSeparator.setExpanded(true);
             // 添加内容
-            accessPanel.add(titledSeparator);
-            accessPanel.add(cardPanels);
+            welcomePanel.add(titledSeparator);
+            welcomePanel.add(cardPanels);
         }
-        refreshToolCustomizerPanel(accessPanel);
+        refreshToolCustomizerPanel(welcomePanel);
     }
 
     private void initToolTreeData(Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
@@ -250,6 +251,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         res.setOpaque(false);
 
         DefaultActionGroup actionGroup = new DefaultActionGroup();
+        actionGroup.addAction(new ToolkitHomeAction());
         actionGroup.addAction(new FixedWindowAction());
         ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_POPUP + ".toolkit.main.toolbar", actionGroup, true);
         toolbar.setTargetComponent(this);
@@ -377,4 +379,15 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         }
     }
 
+    private class ToolkitHomeAction extends AnAction {
+
+        public ToolkitHomeAction() {
+            super("主页", "主页", AllIcons.Nodes.HomeFolder);
+        }
+
+        @Override
+        public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+            refreshToolCustomizerPanel(welcomePanel);
+        }
+    }
 }
