@@ -29,5 +29,5 @@ import javax.swing.*;
 public interface PluginIcons {
 
     @NotNull
-    Icon TOOLKIT = IconManager.getInstance().getIcon("icons/toolkit@earth.svg", PluginIcons.class);
+    Icon TOOLKIT_16X16 = IconManager.getInstance().getIcon("icons/toolkit@earth.svg", PluginIcons.class);
 }

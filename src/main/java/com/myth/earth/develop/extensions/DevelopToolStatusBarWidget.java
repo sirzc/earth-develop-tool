@@ -20,8 +20,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.IconLikeCustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.ui.components.JBLabel;
-import com.myth.earth.develop.kit.IconKit;
 import com.myth.earth.develop.ui.toolkit.ToolkitProjectService;
+import icons.PluginIcons;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,7 +46,7 @@ public class DevelopToolStatusBarWidget implements IconLikeCustomStatusBarWidget
 
     @Override
     public JComponent getComponent() {
-        JBLabel jbLabel = new JBLabel(IconKit.TOOLKIT_16X16);
+        JBLabel jbLabel = new JBLabel(PluginIcons.TOOLKIT_16X16);
         jbLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
