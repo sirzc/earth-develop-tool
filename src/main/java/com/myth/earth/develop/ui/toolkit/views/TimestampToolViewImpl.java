@@ -107,7 +107,8 @@ public class TimestampToolViewImpl extends AbstractToolView {
             }
         });
 
-        JPanel toTimestampPanel = new JPanel(new HorizontalLayout());
+        JPanel toTimestampPanel = new JPanel();
+        toTimestampPanel.setLayout(new BoxLayout(toTimestampPanel, BoxLayout.X_AXIS));
         toTimestampPanel.add(fromDateTimeField);
         toTimestampPanel.add(timeZoneBox2);
         toTimestampPanel.add(toTimestampButton);
@@ -145,7 +146,8 @@ public class TimestampToolViewImpl extends AbstractToolView {
             }
         });
 
-        JPanel toDatePanel = new JPanel(new HorizontalLayout());
+        JPanel toDatePanel = new JPanel();
+        toDatePanel.setLayout(new BoxLayout(toDatePanel, BoxLayout.X_AXIS));
         toDatePanel.add(fromTimeField);
         toDatePanel.add(timeUnitBox1);
         toDatePanel.add(toDateButton);
@@ -160,9 +162,8 @@ public class TimestampToolViewImpl extends AbstractToolView {
     }
 
     private static @NotNull JBTextField createTextField(String currentTimeMillis) {
-        JBTextField fromTimeField = new JBTextField(currentTimeMillis);
-        fromTimeField.setPreferredSize(JBUI.size(150, 35));
-        return fromTimeField;
+        // fromTimeField.setPreferredSize(JBUI.size(150, 35));
+        return new JBTextField(currentTimeMillis);
     }
 
     private static @NotNull ComboBox<String> createTimeZoneBox() {
