@@ -32,17 +32,22 @@ import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.HtmlPanel;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
+import com.intellij.util.ui.WrapLayout;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import com.intellij.util.ui.tree.TreeUtil;
+import com.myth.earth.develop.ui.component.CardPanel;
+import com.myth.earth.develop.ui.component.CollapsibleTitledSeparator;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
+import org.jdesktop.swingx.VerticalLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -69,9 +74,9 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     private final        Tree                                                   toolTree;
     private final        JPanel                                                 toolCustomizerPanel;
     private final        HintHtmlLabel                                          hintHtmlLabel;
+    private final        Map<DefaultMutableTreeNode, Class<? extends ToolView>> toolNodeMapper;
     private              boolean                                                pinWindow;
     private              JBPopup                                                showPopup;
-    private              Map<DefaultMutableTreeNode, Class<? extends ToolView>> toolNodeMapper;
 
     public ToolMainPopupPanel(Project project, Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
         this.project = project;
@@ -83,6 +88,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         this.toolNodeMapper = new ConcurrentHashMap<>(16);
         initToolTreeAction();
         initToolTreeData(toolCategoryListMap);
+        initWelcomePanel(toolCategoryListMap);
 
         JPanel topLeftPanel = createTopLeftPanel();
         JPanel topRightPanel = createTopRightPanel();
@@ -109,6 +115,51 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         addToTop(topPanel);
         addToCenter(onePixelSplitter);
         addToBottom(hintHtmlLabel);
+    }
+
+    private void initWelcomePanel(Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
+        JPanel accessPanel = new JPanel(new VerticalLayout());
+        accessPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        for (Map.Entry<ToolCategory, List<Class<? extends ToolView>>> entry : toolCategoryListMap.entrySet()) {
+            ToolCategory category = entry.getKey();
+            JPanel cardPanels = new JPanel(new WrapLayout(WrapLayout.LEFT, 5, 5));
+            for (Class<? extends ToolView> toolViewClass : entry.getValue()) {
+                CardPanel cardPanel = new CardPanel(toolViewClass);
+                cardPanel.setPreferredSize(JBUI.size(260,100));
+                cardPanels.add(cardPanel);
+                cardPanel.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        // 从toolNodeMapper中获取对应节点，然后设置选中
+                        DefaultMutableTreeNode selectedNode = null;
+                        for (Map.Entry<DefaultMutableTreeNode, Class<? extends ToolView>> entry : toolNodeMapper.entrySet()) {
+                            if (entry.getValue().equals(toolViewClass)) {
+                                selectedNode = entry.getKey();
+                                break;
+                            }
+                        }
+                        if (selectedNode != null) {
+                            toolTree.setSelectionPath(new TreePath(selectedNode.getPath()));
+                            // 刷新提示内容
+                            Tool tool = toolViewClass.getAnnotation(Tool.class);
+                            refreshHintContent(tool.name() + "：" +tool.description());
+                            // 展示具体工具内容
+                            ToolView toolView = ToolkitProjectService.getInstance(project).get(toolViewClass);
+                            refreshToolCustomizerPanel(toolView.refreshView(project));
+                        }
+                    }
+                });
+            }
+            // 添加流水线信息
+            CollapsibleTitledSeparator titledSeparator = new CollapsibleTitledSeparator(category.getName());
+            titledSeparator.setLabelFor(toolCustomizerPanel);
+            titledSeparator.onAction(cardPanels::setVisible);
+            titledSeparator.setExpanded(true);
+            // 添加内容
+            accessPanel.add(titledSeparator);
+            accessPanel.add(cardPanels);
+        }
+        refreshToolCustomizerPanel(accessPanel);
     }
 
     private void initToolTreeData(Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
