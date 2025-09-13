@@ -42,7 +42,6 @@ import com.myth.earth.develop.ui.component.CollapsibleTitledSeparator;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
-import org.apache.commons.lang3.StringUtils;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jetbrains.annotations.NotNull;
 
@@ -79,7 +78,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     private final        JPanel                                                 toolCustomizerPanel;
     private final        HintHtmlLabel                                          hintHtmlLabel;
     private final        Map<DefaultMutableTreeNode, Class<? extends ToolView>> toolNodeMapper;
-    private final        JPanel                                                 welcomePanel;
+    private final        JBScrollPane                                           welcomeScrollPanel;
     private              boolean                                                pinWindow;
     private              JBPopup                                                showPopup;
 
@@ -91,8 +90,10 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         this.hintHtmlLabel = createBottomHint();
         this.toolTree = createToolTree();
         this.toolNodeMapper = new ConcurrentHashMap<>(16);
-        this.welcomePanel = new JPanel(new VerticalLayout());
-        this.welcomePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        this.welcomeScrollPanel = new JBScrollPane();
+        this.welcomeScrollPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        this.welcomeScrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        this.welcomeScrollPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         initToolTreeAction();
         initToolTreeData(toolCategoryListMap);
         initWelcomePanel(toolCategoryListMap);
@@ -125,6 +126,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     }
 
     private void initWelcomePanel(Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
+        JPanel verticalPanel = new JPanel(new VerticalLayout());
         for (Map.Entry<ToolCategory, List<Class<? extends ToolView>>> entry : toolCategoryListMap.entrySet()) {
             ToolCategory category = entry.getKey();
             JPanel cardPanels = new JPanel(new WrapLayout(WrapLayout.LEFT, 5, 5));
@@ -161,10 +163,11 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
             titledSeparator.onAction(cardPanels::setVisible);
             titledSeparator.setExpanded(true);
             // 添加内容
-            welcomePanel.add(titledSeparator);
-            welcomePanel.add(cardPanels);
+            verticalPanel.add(titledSeparator);
+            verticalPanel.add(cardPanels);
         }
-        refreshToolCustomizerPanel(welcomePanel);
+        welcomeScrollPanel.setViewportView(verticalPanel);
+        refreshToolCustomizerPanel(welcomeScrollPanel);
     }
 
     private void initToolTreeData(Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
@@ -399,7 +402,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
 
         @Override
         public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-            refreshToolCustomizerPanel(welcomePanel);
+            refreshToolCustomizerPanel(welcomeScrollPanel);
         }
     }
 }
