@@ -21,7 +21,6 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.FormBuilder;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
@@ -76,22 +75,21 @@ public class Base64ToolViewImpl extends AbstractToolView {
                                             .encodeToString(fileContent);
                 String mimeType = getMimeType(filePath);
                 String dataUri = "data:" + mimeType + ";base64," + base64String;
-
-                dataUriTextArea.setText(dataUri);
-
                 // 获取图片尺寸
                 ImageIcon imageIcon = new ImageIcon(fileContent);
                 int width = imageIcon.getIconWidth();
                 int height = imageIcon.getIconHeight();
-
                 // CSS 补充 div.image 和宽高
-                String cssText = String.format(
-                        "div.image {\n" + "    width: %dpx;\n" + "    height: %dpx;\n" + "    background-image: url(%s);\n" + "    background-size: contain;\n"
-                                + "    background-repeat: no-repeat;\n" + "}", width, height, dataUri);
-                cssTextArea.setText(cssText);
-
-                // HTML 补充宽高
+                String cssText = String.format( "div.image {\n" +
+                                                        "    width: %dpx;\n" +
+                                                        "    height: %dpx;\n" +
+                                                        "    background-image: url(%s);\n" +
+                                                        "    background-size: contain;\n" +
+                                                        "    background-repeat: no-repeat;\n" +
+                                                        "}", width, height, dataUri);
                 String htmlText = String.format("<img src=\"%s\" alt=\"base64 image\" width=\"%d\" height=\"%d\" />", dataUri, width, height);
+                dataUriTextArea.setText(dataUri);
+                cssTextArea.setText(cssText);
                 htmlTextArea.setText(htmlText);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "转换失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
@@ -101,9 +99,9 @@ public class Base64ToolViewImpl extends AbstractToolView {
         JPanel centerPanel = FormBuilder.createFormBuilder()
                                         .setVerticalGap(5)
                                         .addComponent(topPanel)
-                                        .addLabeledComponent(new JLabel("data uri:"), new JBScrollPane(dataUriTextArea), true)
-                                        .addLabeledComponent(new JLabel("css:"), new JBScrollPane(cssTextArea), true)
-                                        .addLabeledComponent(new JLabel("html:"), new JBScrollPane(htmlTextArea), true)
+                                        .addLabeledComponent(new JLabel("data uri:"), createScrollPane(dataUriTextArea), true)
+                                        .addLabeledComponent(new JLabel("css:"), createScrollPane(cssTextArea), true)
+                                        .addLabeledComponent(new JLabel("html:"), createScrollPane(htmlTextArea), true)
                                         .getPanel();
         add(centerPanel, BorderLayout.CENTER);
     }

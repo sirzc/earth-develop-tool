@@ -16,6 +16,7 @@
 package com.myth.earth.develop.ui.toolkit.views;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
@@ -68,13 +69,32 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
         return button;
     }
 
+    /**
+     * 创建一个不可编辑的面板
+     *
+     * @return 不可编辑的组件
+     */
     @NotNull
-    protected static  JBTextArea createTextArea() {
-        JBTextArea dataUriTextArea = new JBTextArea();
-        dataUriTextArea.setMargin(JBUI.insets(5));
-        dataUriTextArea.setEditable(false);
-        dataUriTextArea.setLineWrap(true);
-        dataUriTextArea.setWrapStyleWord(true);
-        return dataUriTextArea;
+    protected static JBTextArea createTextArea() {
+        JBTextArea textArea = new JBTextArea();
+        textArea.setMargin(JBUI.insets(5));
+        textArea.setEditable(false);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        return textArea;
+    }
+
+    /**
+     * 创建一个无水平滚动条，需要时显示的垂直滚动条
+     *
+     * @param component 添加滚动条的内容
+     * @return 带滚动条的组件
+     */
+    @NotNull
+    protected static JBScrollPane createScrollPane(JComponent component) {
+        JBScrollPane scrollPane = new JBScrollPane(component);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        return scrollPane;
     }
 }
