@@ -31,10 +31,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.treeStructure.Tree;
-import com.intellij.util.ui.HtmlPanel;
-import com.intellij.util.ui.JBUI;
-import com.intellij.util.ui.UIUtil;
-import com.intellij.util.ui.WrapLayout;
+import com.intellij.util.ui.*;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.myth.earth.develop.ui.component.CardPanel;
@@ -42,6 +39,7 @@ import com.myth.earth.develop.ui.component.CollapsibleTitledSeparator;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
+import icons.PluginIcons;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jetbrains.annotations.NotNull;
 
@@ -267,6 +265,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
 
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.addAction(new ToolkitHomeAction());
+        actionGroup.addAction(new ResizeViewAction());
         actionGroup.addAction(new FixedWindowAction());
         ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_POPUP + ".toolkit.main.toolbar", actionGroup, true);
         toolbar.setTargetComponent(this);
@@ -403,6 +402,42 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         @Override
         public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
             refreshToolCustomizerPanel(welcomeScrollPanel);
+        }
+    }
+
+    private class ResizeViewAction extends AnAction {
+
+        private boolean isMax = false;
+
+        public ResizeViewAction() {
+            super("最大", "调整大小", PluginIcons.MAX_16X16);
+        }
+
+        @Override
+        public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+            isMax = !isMax;
+            if (showPopup != null) {
+                if (isMax) {
+                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                    showPopup.setSize(screenSize);
+                    showPopup.setLocation(new Point(0,0));
+                } else {
+                    Dimension preferredSize = getPreferredSize();
+                    showPopup.setSize(preferredSize);
+                    // 计算在屏幕上的居中位置
+                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                    int x = (screenSize.width - preferredSize.width) / 2;
+                    int y = (screenSize.height - preferredSize.height) / 2;
+                    showPopup.setLocation(new Point(x, y));
+                }
+            }
+        }
+
+        @Override
+        public void update(@NotNull AnActionEvent e) {
+            Presentation presentation = e.getPresentation();
+            presentation.setText(isMax ? "最小" : "最大");
+            presentation.setIcon(isMax ? PluginIcons.MIN_16X16 : PluginIcons.MAX_16X16);
         }
     }
 }
