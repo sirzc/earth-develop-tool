@@ -16,16 +16,35 @@
 <idea-plugin>
     <id>com.myth.earth.earth-develop-tool</id>
     <name>Earth Develop Tool</name>
-    <vendor email="zhouchao151724@163.com" url="https://github.com/sirzc">zhou chao</vendor>
+    <vendor email="zhouchao151724@163.com" url="https://github.com/sirzc">周潮、赵琦</vendor>
 
     <description>
         <![CDATA[
-            开发小助手，收录一些不常用但是要用的工具.<br>
-            <em>Mybatis控制台日志转Sql</em>
-            <em>功能二</em>
-            <em>功能三</em>
-            <em>功能四</em>
-            <em>功能五</em>
+            Earth Develop Toolkit: is one of the plugins in the earth series, a development assistant that collects some useful tools needed during the development process.
+            <h1>Earth Develop Toolkit</h1>
+            <h2>English Description</h2>
+            <p>Development assistant, collecting some uncommon but useful tools.</p>
+            <ul>
+                <li><em>MyBatis Console Log to SQL</em>: Quickly convert MyBatis output logs into executable SQL statements.</li>
+                <li><em>Text Encryption/Decryption</em>: Supports encryption and decryption of common text formats such as Base64 and AES.</li>
+                <li><em>Timestamp Converter</em>: Easily convert between timestamps and standard time formats.</li>
+                <li><em>UUID Generator</em>: One-click generation of standard UUID strings.</li>
+                <li><em>JSON Formatter</em>: Supports formatting and compressing JSON strings.</li>
+                <li><em>Radix Converter</em>: Supports conversion between binary, octal, decimal, and hexadecimal numbers.</li>
+                <li><em>Image to Base64</em>: Quickly convert image files into Base64 encoded strings.</li>
+            </ul>
+
+            <h2>中文描述</h2>
+            <p>Earth Develop Toolkit是earth系列插件之一，开发小助手，收录一些开发过程需要用到的一些工具。</p>
+            <ul>
+                <li><em>Mybatis控制台日志转Sql</em>：将MyBatis输出的日志快速转换为可执行的SQL语句。</li>
+                <li><em>文本加解密</em>：支持常见文本的加密与解密功能，如Base64、AES等。</li>
+                <li><em>时间戳转换</em>：方便地在时间戳和标准时间之间进行相互转换。</li>
+                <li><em>UUID生成器</em>：一键生成标准UUID字符串。</li>
+                <li><em>JSON格式化</em>：支持JSON字符串的格式化和压缩功能。</li>
+                <li><em>进制转换</em>：支持二进制、八进制、十进制、十六进制之间的相互转换。</li>
+                <li><em>图片转Base64</em>：将图片文件快速转换为Base64编码字符串。</li>
+            </ul>
         ]]>
     </description>
 
@@ -52,7 +71,7 @@
             <add-to-group group-id="ConsoleEditorPopupMenu" anchor="first"/>
         </action>
 
-        <action id="EarthDevelopTool.QuickOpenToolkit" class="com.myth.earth.develop.action.QuickOpenToolKitAction" >
+        <action id="EarthDevelopTool.QuickOpenToolkit" class="com.myth.earth.develop.action.QuickOpenToolKitAction" text="打开工具箱">
             <keyboard-shortcut keymap="$default" first-keystroke="alt F2"/>
         </action>
     </actions>
