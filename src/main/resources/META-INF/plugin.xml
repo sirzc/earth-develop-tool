@@ -20,8 +20,8 @@
 
     <description>
         <![CDATA[
-            Earth Develop Toolkit: is one of the plugins in the earth series, a development assistant that collects some useful tools needed during the development process.
-            <h1>Earth Develop Toolkit</h1>
+            Earth Develop Tool: is one of the plugins in the earth series, a development assistant that collects some useful tools needed during the development process.
+            <h1>Earth Develop Tool</h1>
             <h2>English Description</h2>
             <p>Development assistant, collecting some uncommon but useful tools.</p>
             <ul>
@@ -35,7 +35,7 @@
             </ul>
 
             <h2>中文描述</h2>
-            <p>Earth Develop Toolkit是earth系列插件之一，开发小助手，收录一些开发过程需要用到的一些工具。</p>
+            <p>Earth Develop Tool是earth系列插件之一，开发小助手，收录一些开发过程需要用到的一些工具。</p>
             <ul>
                 <li><em>Mybatis控制台日志转Sql</em>：将MyBatis输出的日志快速转换为可执行的SQL语句。</li>
                 <li><em>文本加解密</em>：支持常见文本的加密与解密功能，如Base64、AES等。</li>
