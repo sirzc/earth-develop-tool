@@ -24,6 +24,7 @@
             <h1>Earth Develop Tool</h1>
             <h2>English Description</h2>
             <p>Development assistant, collecting some uncommon but useful tools.</p>
+            <p>Shortcut: alt + F2 (Windows/Linux) or option + F2 (macOS). You can adjust this in IDEA settings by searching for "Open Toolkit".</p>
             <ul>
                 <li><em>MyBatis Console Log to SQL</em>: Quickly convert MyBatis output logs into executable SQL statements.</li>
                 <li><em>Text Encryption/Decryption</em>: Supports encryption and decryption of common text formats such as Base64 and AES.</li>
@@ -36,6 +37,7 @@
 
             <h2>中文描述</h2>
             <p>Earth Develop Tool是earth系列插件之一，开发小助手，收录一些开发过程需要用到的一些工具。</p>
+            <p>快捷键：alt + F2 (Windows/Linux) 或 option + F2 (macOS)，可在IDEA设置中搜索“打开工具箱”进行调整。</p>
             <ul>
                 <li><em>Mybatis控制台日志转Sql</em>：将MyBatis输出的日志快速转换为可执行的SQL语句。</li>
                 <li><em>文本加解密</em>：支持常见文本的加密与解密功能，如Base64、AES等。</li>
