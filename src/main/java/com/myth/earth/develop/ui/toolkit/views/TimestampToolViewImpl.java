@@ -192,7 +192,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
 
     private static @NotNull ComboBox<String> createTimeUnitBox() {
         ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.setPreferredSize(JBUI.size(60,35));
+        comboBox.setPreferredSize(JBUI.size(65,35));
         comboBox.addItem("ms");
         comboBox.addItem("s");
         return comboBox;
