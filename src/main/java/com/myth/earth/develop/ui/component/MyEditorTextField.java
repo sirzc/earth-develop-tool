@@ -30,9 +30,9 @@ import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.IdeBorderFactory;
-import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.util.LocalTimeCounter;
 import com.intellij.util.ui.JBUI;
+import com.myth.earth.develop.common.CommonConst;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -134,7 +134,7 @@ public class MyEditorTextField extends EditorTextField {
     public Document createDocument(@Nullable final String text, @NotNull final FileType fileType) {
         final PsiFileFactory factory = PsiFileFactory.getInstance(getProject());
         final long stamp = LocalTimeCounter.currentTime();
-        final PsiFile psiFile = factory.createFileFromText("earth-develop-toolkit", fileType, text == null ? "" : text, stamp, true, false);
+        final PsiFile psiFile = factory.createFileFromText(CommonConst.FILE_NAME, fileType, text == null ? "" : text, stamp, true, false);
         return PsiDocumentManager.getInstance(getProject()).getDocument(psiFile);
     }
 }
