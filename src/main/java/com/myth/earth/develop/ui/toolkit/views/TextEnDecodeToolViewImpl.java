@@ -44,7 +44,7 @@ import java.util.List;
  * @author zhouchao
  * @date 2025-09-12 下午10:03
  */
-@Tool(category = ToolCategory.DEVELOP, name = "文本加解密", description = "支持Base64、Url、MD5、AES、DES、SHA1、SHA256")
+@Tool(category = ToolCategory.ENCODE, name = "文本加解密", description = "支持Base64、Url、MD5、AES、DES、SHA1、SHA256")
 public class TextEnDecodeToolViewImpl extends AbstractToolView {
 
     /**

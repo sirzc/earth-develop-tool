@@ -39,7 +39,7 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
 
     public AbstractToolView(@NotNull Project project) {
         super(new BorderLayout());
-        setBorder(JBUI.Borders.empty(5));
+        setBorder(JBUI.Borders.empty(10));
         // Tool tool = this.getClass().getAnnotation(Tool.class);
         // String title = String.format("%s>%s(%s)", tool.category().getName(), tool.name(), tool.description());
         // add(new JBLabel(title), BorderLayout.NORTH);
