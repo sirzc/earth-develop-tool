@@ -16,6 +16,7 @@
 package com.myth.earth.develop.ui.toolkit.views;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
@@ -66,13 +67,17 @@ public class DruidToolViewImpl extends AbstractToolView {
         propertiesTextArea.setPreferredSize(JBUI.size(-1, 120));
         propertiesTextArea.setBackground(CommonConst.BACKGROUND_COLOR);
 
+        JBScrollPane propertiesPanel = new JBScrollPane(propertiesTextArea);
+        propertiesPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        propertiesPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
         JPanel rootPanel = FormBuilder.createFormBuilder()
                                       .setVerticalGap(10)
                                       .addComponent(encryptPanel)
                                       .addComponent(privateKeyField)
                                       .addComponent(publicKeyField)
                                       .addComponent(encryptResultField)
-                                      .addLabeledComponent("Properties example:", propertiesTextArea, true)
+                                      .addLabeledComponent("Properties example:", propertiesPanel, true)
                                       .addSeparator()
                                       .addComponent(decryptPublicKeyField)
                                       .addComponent(decryptPasswordField)
