@@ -31,11 +31,15 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.treeStructure.Tree;
-import com.intellij.util.ui.*;
+import com.intellij.util.ui.HtmlPanel;
+import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.UIUtil;
+import com.intellij.util.ui.WrapLayout;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.myth.earth.develop.ui.component.CardPanel;
 import com.myth.earth.develop.ui.component.CollapsibleTitledSeparator;
+import com.myth.earth.develop.ui.component.EarthSupportPanel;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
@@ -77,6 +81,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     private final        HintHtmlLabel                                          hintHtmlLabel;
     private final        Map<DefaultMutableTreeNode, Class<? extends ToolView>> toolNodeMapper;
     private final        JBScrollPane                                           welcomeScrollPanel;
+    private final        EarthSupportPanel                                      earthSupportPanel;
     private              boolean                                                pinWindow;
     private              JBPopup                                                showPopup;
 
@@ -92,6 +97,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         this.welcomeScrollPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         this.welcomeScrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         this.welcomeScrollPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        this.earthSupportPanel = new EarthSupportPanel();
         initToolTreeAction();
         initToolTreeData(toolCategoryListMap);
         initWelcomePanel(toolCategoryListMap);
@@ -266,6 +272,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.addAction(new ToolkitHomeAction());
         actionGroup.addAction(new ResizeViewAction());
+        actionGroup.addAction(new LikeHomeAction());
         actionGroup.addAction(new FixedWindowAction());
         ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_POPUP + ".toolkit.main.toolbar", actionGroup, true);
         toolbar.setTargetComponent(this);
@@ -402,6 +409,18 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         @Override
         public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
             refreshToolCustomizerPanel(welcomeScrollPanel);
+        }
+    }
+
+    private class LikeHomeAction extends AnAction {
+
+        public LikeHomeAction(){
+            super("支持/捐赠", "支持/捐赠", PluginIcons.LIKE);
+        }
+
+        @Override
+        public void actionPerformed(@NotNull AnActionEvent e) {
+            refreshToolCustomizerPanel(earthSupportPanel);
         }
     }
 

@@ -34,4 +34,6 @@ public interface PluginIcons {
     Icon MAX_16X16     = IconManager.getInstance().getIcon("icons/max@earth.svg", PluginIcons.class);
     @NotNull
     Icon MIN_16X16     = IconManager.getInstance().getIcon("icons/min@earth.svg", PluginIcons.class);
+    @NotNull
+    Icon LIKE          = IconManager.getInstance().getIcon("icons/like@earth.svg", PluginIcons.class);
 }
