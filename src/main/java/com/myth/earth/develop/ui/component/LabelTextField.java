@@ -17,12 +17,12 @@ package com.myth.earth.develop.ui.component;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ui.IdeBorderFactory;
+import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.components.fields.ExpandableTextField;
 import com.intellij.ui.components.fields.ExtendableTextComponent;
 import com.intellij.util.ui.JBUI;
-import com.myth.earth.develop.common.CommonConst;
 import com.myth.earth.develop.kit.ClipboardKit;
 
 import javax.swing.*;
@@ -56,9 +56,9 @@ public class LabelTextField extends JPanel {
 
         textField = new ExpandableTextField();
         // 添加右框或修改背景色
-        // textField.setBorder(new CustomLineBorder(JBUI.insetsLeft(1)));
-        textField.setBorder(BorderFactory.createEmptyBorder());
-        textField.setBackground(CommonConst.BACKGROUND_COLOR);
+        textField.setBorder(new CustomLineBorder(JBUI.insetsLeft(1)));
+        // textField.setBorder(BorderFactory.createEmptyBorder());
+        // textField.setBackground(CommonConst.BACKGROUND_COLOR);
         if (openCopy) {
             textField.addExtension(ExtendableTextComponent.Extension.create(AllIcons.General.InlineCopyHover, AllIcons.General.InlineCopy, "Copy", () -> {
                 String text = textField.getText();

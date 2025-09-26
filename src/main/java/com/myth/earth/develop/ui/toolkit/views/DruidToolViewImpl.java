@@ -20,7 +20,6 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
-import com.myth.earth.develop.common.CommonConst;
 import com.myth.earth.develop.other.ConfigTools;
 import com.myth.earth.develop.ui.component.LabelTextField;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
@@ -65,7 +64,6 @@ public class DruidToolViewImpl extends AbstractToolView {
         JBTextArea propertiesTextArea = createTextArea();
         propertiesTextArea.setEditable(true);
         propertiesTextArea.setPreferredSize(JBUI.size(-1, 120));
-        propertiesTextArea.setBackground(CommonConst.BACKGROUND_COLOR);
 
         JBScrollPane propertiesPanel = new JBScrollPane(propertiesTextArea);
         propertiesPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
