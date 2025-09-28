@@ -19,6 +19,7 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextArea;
@@ -42,6 +43,7 @@ public class CardPanel extends JBPanel<CardPanel> {
         super(new BorderLayout());
         Tool tool = clz.getAnnotation(Tool.class);
         JBLabel toolLabel = new JBLabel(tool.name());
+        toolLabel.setBorder(JBUI.Borders.emptyLeft(10));
         if (StringUtil.isNotEmpty(tool.iconPath())) {
             toolLabel.setIcon(IconLoader.getIcon(tool.iconPath(), CardPanel.class));
         }
@@ -61,13 +63,10 @@ public class CardPanel extends JBPanel<CardPanel> {
         summeryTextArea.setWrapStyleWord(true);
         summeryTextArea.setText(tool.description());
 
-        JPanel leftInfoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        leftInfoPanel.setBorder(JBUI.Borders.empty(5, 5, 0, 0));
-        leftInfoPanel.add(toolLabel);
-
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(leftInfoPanel, BorderLayout.WEST);
-        topPanel.add(new JSeparator(SwingConstants.HORIZONTAL), BorderLayout.SOUTH);
+        topPanel.setBorder(new CustomLineBorder(JBUI.insetsBottom(1)));
+        topPanel.setPreferredSize(JBUI.size(0, 35));
+        topPanel.add(toolLabel, BorderLayout.WEST);
 
         JPanel cardPanel = new JPanel(new BorderLayout());
         cardPanel.setBorder(IdeBorderFactory.createRoundedBorder(3));
