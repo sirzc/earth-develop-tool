@@ -22,7 +22,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBTextArea;
-import com.intellij.util.ui.FormBuilder;
+import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +47,8 @@ public class Base64ToolViewImpl extends AbstractToolView {
 
     public Base64ToolViewImpl(@NotNull Project project) {
         super(project);
-        TextFieldWithBrowseButton textFieldWithBrowseButton = buildFileSelectFieldButton(project);
+        TextFieldWithBrowseButton imageTextField = buildFileSelectFieldButton(project);
+        imageTextField.getTextField().setBorder(JBUI.Borders.empty());
 
         JBTextArea dataUriTextArea = createTextArea();
 
@@ -56,10 +57,9 @@ public class Base64ToolViewImpl extends AbstractToolView {
         JBTextArea htmlTextArea = createTextArea();
 
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(new JLabel("选择图片:"), BorderLayout.WEST);
-        topPanel.add(textFieldWithBrowseButton, BorderLayout.CENTER);
+        topPanel.add(createLineLabelPanel("选择图片", imageTextField, 80), BorderLayout.CENTER);
         topPanel.add(createButton("转换", e -> {
-            String filePath = textFieldWithBrowseButton.getText();
+            String filePath = imageTextField.getText();
             if (filePath.isEmpty()) {
                 return;
             }
@@ -96,13 +96,17 @@ public class Base64ToolViewImpl extends AbstractToolView {
             }
         }), BorderLayout.EAST);
 
-        JPanel centerPanel = FormBuilder.createFormBuilder()
-                                        .setVerticalGap(5)
-                                        .addComponent(topPanel)
-                                        .addLabeledComponent(new JLabel("data uri:"), createScrollPane(dataUriTextArea), true)
-                                        .addLabeledComponent(new JLabel("css:"), createScrollPane(cssTextArea), true)
-                                        .addLabeledComponent(new JLabel("html:"), createScrollPane(htmlTextArea), true)
-                                        .getPanel();
+        JPanel centerPanel =  new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.add(Box.createVerticalStrut(5));
+        centerPanel.add(createBoxLabelPanel("data uri", createScrollPane(dataUriTextArea)));
+        centerPanel.add(Box.createVerticalStrut(5));
+        centerPanel.add(createBoxLabelPanel("css", createScrollPane(cssTextArea)));
+        centerPanel.add(Box.createVerticalStrut(5));
+        centerPanel.add(createBoxLabelPanel("html", createScrollPane(htmlTextArea)));
+
+
+        add(topPanel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
     }
 

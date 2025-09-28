@@ -16,6 +16,9 @@
 package com.myth.earth.develop.ui.toolkit.views;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.IdeBorderFactory;
+import com.intellij.ui.border.CustomLineBorder;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
@@ -96,5 +99,52 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         return scrollPane;
+    }
+
+    /**
+     * 创建一个label行panel
+     *
+     * @param tag 标签名称
+     * @param component 显示内容
+     * @param weight 标签名称宽度
+     * @return 水平带label的panel
+     */
+    @NotNull
+    protected static JPanel createLineLabelPanel(@NotNull String tag, @NotNull JComponent component, Integer weight) {
+        JPanel labelPanel = new JPanel(new BorderLayout());
+        labelPanel.setPreferredSize(JBUI.size(-1, 35));
+        labelPanel.setBorder(IdeBorderFactory.createBorder());
+
+        JBLabel label = new JBLabel(tag);
+        label.setBorder(JBUI.Borders.empty(0, 10));
+        if (weight != null) {
+            label.setPreferredSize(JBUI.size(weight, -1));
+        }
+
+        component.setBorder(new CustomLineBorder(JBUI.insetsLeft(1)));
+        labelPanel.add(label, BorderLayout.WEST);
+        labelPanel.add(component, BorderLayout.CENTER);
+        return labelPanel;
+    }
+
+    /**
+     * 创建一个label盒子panel
+     *
+     * @param tag 标签名称
+     * @param component 显示内容
+     * @return 上下结构带label的panel
+     */
+    protected static JPanel createBoxLabelPanel(@NotNull String tag, @NotNull JComponent component) {
+        JPanel labelPanel = new JPanel(new BorderLayout());
+        labelPanel.setBorder(IdeBorderFactory.createBorder());
+
+        JBLabel label = new JBLabel(tag);
+        label.setPreferredSize(JBUI.size(0, 35));
+        label.setBorder(JBUI.Borders.emptyLeft(10));
+
+        component.setBorder(new CustomLineBorder(JBUI.insetsTop(1)));
+        labelPanel.add(label, BorderLayout.NORTH);
+        labelPanel.add(component, BorderLayout.CENTER);
+        return labelPanel;
     }
 }
