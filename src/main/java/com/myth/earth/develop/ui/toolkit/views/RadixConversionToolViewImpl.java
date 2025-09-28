@@ -58,9 +58,8 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
         topPanel.add(convertButton);
 
         JPanel centerPanel = FormBuilder.createFormBuilder()
-                                        .setVerticalGap(5)
-                                        .addLabeledComponent(new JLabel("输入数值（每行一个）:"), new JBScrollPane(inputTextArea), true)
-                                        .addLabeledComponent(new JLabel("转换结果:"), new JBScrollPane(outputTextArea), true)
+                                        .addComponentFillVertically(createBoxLabelPanel("输入数值（每行一个）", new JBScrollPane(inputTextArea)),5)
+                                        .addComponentFillVertically(createBoxLabelPanel("转换结果:", new JBScrollPane(outputTextArea)), 5)
                                         .getPanel();
 
         JPanel mainPanel = new JPanel(new BorderLayout());
