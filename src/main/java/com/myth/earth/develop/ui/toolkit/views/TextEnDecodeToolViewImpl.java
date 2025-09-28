@@ -71,9 +71,7 @@ public class TextEnDecodeToolViewImpl extends AbstractToolView {
         signTextField = new JBTextField();
         signTextField.setPreferredSize(new Dimension(-1, 35));
 
-        JPanel signPanel = new JPanel(new BorderLayout());
-        signPanel.add(new JLabel("密钥:"), BorderLayout.WEST);
-        signPanel.add(signTextField, BorderLayout.CENTER);
+        JPanel signPanel = createLineLabelPanel("密钥", signTextField, 80);
         signPanel.setVisible(false);
 
         optionBox = new ComboBox<>();
@@ -120,8 +118,8 @@ public class TextEnDecodeToolViewImpl extends AbstractToolView {
                                         .setVerticalGap(5)
                                         .addLabeledComponent(new JLabel("加密方式:"), topPanel)
                                         .addComponent(signPanel)
-                                        .addLabeledComponent(new JLabel("输入:"), createScrollPane(inputTextArea), true)
-                                        .addLabeledComponent(new JLabel("输出:"), createScrollPane(outputTextArea), true)
+                                        .addComponentFillVertically(createBoxLabelPanel("输入", createScrollPane(inputTextArea)), 5)
+                                        .addComponentFillVertically(createBoxLabelPanel("输出", createScrollPane(outputTextArea)), 5)
                                         .getPanel();
         add(centerPanel, BorderLayout.CENTER);
     }
