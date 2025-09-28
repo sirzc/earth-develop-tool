@@ -75,7 +75,7 @@ public class DruidToolViewImpl extends AbstractToolView {
                                       .addComponent(privateKeyField)
                                       .addComponent(publicKeyField)
                                       .addComponent(encryptResultField)
-                                      .addLabeledComponent("Properties example:", propertiesPanel, true)
+                                      .addComponent(createBoxLabelPanel("Properties example:", propertiesPanel))
                                       .addSeparator()
                                       .addComponent(decryptPublicKeyField)
                                       .addComponent(decryptPasswordField)
