@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.myth.earth'
-version '1.1'
+version '1.2'
 
 repositories {
     mavenCentral()
@@ -31,8 +31,8 @@ patchPluginXml {
     changeNotes = """
       <h3>版本更新: ${project.version}</h3>
       <ul>
-        <li>新增：Druid加密解密</li>
-        <li>优化：整体工具窗口显示</li>
+        <li>新增：Properties比较</li>
+        <li>优化：工具栏整体显示风格</li>
       </ul>
     """
 }
