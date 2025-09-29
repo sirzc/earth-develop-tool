@@ -26,9 +26,10 @@ import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
-import com.intellij.util.ui.WrapLayout;
+import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
+import org.jdesktop.swingx.HorizontalLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -108,19 +109,22 @@ public class TextEnDecodeToolViewImpl extends AbstractToolView {
         buttonGroup.add(encodeRadio);
         buttonGroup.add(decodeRadio);
 
-        JPanel topPanel = new JPanel(new WrapLayout(WrapLayout.LEFT));
-        topPanel.add(optionBox);
+        JPanel topPanel = new JPanel(new HorizontalLayout());
+        topPanel.setBorder(JBUI.Borders.empty());
+        topPanel.add(createLineLabelPanel("加密方式", optionBox, 80));
+        topPanel.add(Box.createHorizontalStrut(5));
         topPanel.add(encodeRadio);
         topPanel.add(decodeRadio);
         topPanel.add(createButton("转换", e -> change()));
 
         JPanel centerPanel = FormBuilder.createFormBuilder()
                                         .setVerticalGap(5)
-                                        .addLabeledComponent(new JLabel("加密方式:"), topPanel)
+                                        .addComponent(topPanel)
                                         .addComponent(signPanel)
                                         .addComponentFillVertically(createBoxLabelPanel("输入", createScrollPane(inputTextArea)), 5)
                                         .addComponentFillVertically(createBoxLabelPanel("输出", createScrollPane(outputTextArea)), 5)
                                         .getPanel();
+
         add(centerPanel, BorderLayout.CENTER);
     }
 
@@ -149,8 +153,7 @@ public class TextEnDecodeToolViewImpl extends AbstractToolView {
                     if (!sign.isEmpty()) {
                         try {
                             byte[] keyBytes = expandKey(sign.getBytes(StandardCharsets.UTF_8), 16);
-                            output = SecureUtil.aes(keyBytes)
-                                               .encryptHex(input);
+                            output = SecureUtil.aes(keyBytes).encryptHex(input);
                         } catch (Exception ex) {
                             output = "加密失败: " + ex.getMessage();
                         }
@@ -162,8 +165,7 @@ public class TextEnDecodeToolViewImpl extends AbstractToolView {
                     if (!sign.isEmpty()) {
                         try {
                             byte[] keyBytes = expandKey(sign.getBytes(StandardCharsets.UTF_8), 8);
-                            output = SecureUtil.des(keyBytes)
-                                               .encryptHex(input);
+                            output = SecureUtil.des(keyBytes).encryptHex(input);
                         } catch (Exception ex) {
                             output = "加密失败: " + ex.getMessage();
                         }
