@@ -16,8 +16,10 @@
 package com.myth.earth.develop.ui.toolkit.views;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.components.*;
-import com.intellij.util.ui.JBUI;
+import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTextArea;
+import com.intellij.ui.components.JBTextField;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import org.jetbrains.annotations.NotNull;
@@ -61,8 +63,8 @@ public class UUIDToolViewImpl extends AbstractToolView {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 5));
-        topPanel.add(new JBLabel("数量："));
-        topPanel.add(generateNumField);
+        topPanel.add(createLineLabelPanel("数量", generateNumField, 50));
+        topPanel.add(Box.createHorizontalStrut(5));
         topPanel.add(selectBox);
         topPanel.add(Box.createHorizontalStrut(5));
         topPanel.add(generateButton);
