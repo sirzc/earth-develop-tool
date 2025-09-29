@@ -32,8 +32,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -60,35 +58,31 @@ public class PropertiesDiffViewImpl extends AbstractToolView {
         TextFieldWithBrowseButton sourceTextField = buildFileSelectFieldButton(project);
         TextFieldWithBrowseButton targetTextField = buildFileSelectFieldButton(project);
 
-        JButton diffKeyButton = createButton("差异键", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    CompareResult compareResult = PropertiesCompareUtil.parseAndCompare(sourceTextField.getText(), targetTextField.getText());
-                    Collection<String> sourceKeys = compareResult.getSourceKeys();
-                    Collection<String> targetKeys = compareResult.getTargetKeys();
-                    result1.setText(String.join("\n", sourceKeys));
-                    result2.setText(String.join("\n", targetKeys));
-                } catch (IOException ex) {
-
-                }
+        JButton diffKeyButton = createButton("差异键", e -> {
+            try {
+                CompareResult compareResult = PropertiesCompareUtil.parseAndCompare(sourceTextField.getText(), targetTextField.getText());
+                Collection<String> sourceKeys = compareResult.getSourceKeys();
+                Collection<String> targetKeys = compareResult.getTargetKeys();
+                result1.setText(String.join("\n", sourceKeys));
+                result2.setText(String.join("\n", targetKeys));
+            } catch (IOException ex) {
+                result1.setText("比较执行异常: " + ex.getMessage());
+                result2.setText("比较执行异常: " + ex.getMessage());
             }
         });
         diffKeyButton.setPreferredSize(JBUI.size(80, 35));
 
-        JButton diffValueButton = createButton("差异值", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    CompareResult compareResult = PropertiesCompareUtil.parseAndCompare(sourceTextField.getText(), targetTextField.getText());
-                    Collection<DifferenceResult> differenceResults = compareResult.getDifferenceResults();
-                    List<String> sources = differenceResults.stream().map(dr -> dr.getKey() + "=" + dr.getSource()).collect(Collectors.toList());
-                    List<String> targets = differenceResults.stream().map(dr -> dr.getKey() + "=" + dr.getTarget()).collect(Collectors.toList());
-                    result1.setText(String.join("\n", sources));
-                    result2.setText(String.join("\n", targets));
-                } catch (IOException ex) {
-
-                }
+        JButton diffValueButton = createButton("差异值", e -> {
+            try {
+                CompareResult compareResult = PropertiesCompareUtil.parseAndCompare(sourceTextField.getText(), targetTextField.getText());
+                Collection<DifferenceResult> differenceResults = compareResult.getDifferenceResults();
+                List<String> sources = differenceResults.stream().map(dr -> dr.getKey() + "=" + dr.getSource()).collect(Collectors.toList());
+                List<String> targets = differenceResults.stream().map(dr -> dr.getKey() + "=" + dr.getTarget()).collect(Collectors.toList());
+                result1.setText(String.join("\n", sources));
+                result2.setText(String.join("\n", targets));
+            } catch (IOException ex) {
+                result1.setText("比较执行异常: " + ex.getMessage());
+                result2.setText("比较执行异常: " + ex.getMessage());
             }
         });
         diffValueButton.setPreferredSize(JBUI.size(80, 35));
