@@ -64,10 +64,10 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
     }
 
     @NotNull
-    protected static JButton createButton(String name, ActionListener listener) {
+    protected static JButton createButton(int weight, String name, ActionListener listener) {
         JButton button = new JButton(name);
         // new JBColor(new Color(0, 120, 215), new Color(0, 120, 215))
-        button.setPreferredSize(JBUI.size(50, 35));
+        button.setPreferredSize(JBUI.size(weight, 35));
         button.addActionListener(listener);
         return button;
     }
@@ -104,13 +104,13 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
     /**
      * 创建一个label行panel
      *
-     * @param tag 标签名称
+     * @param weight    标签名称宽度
+     * @param tag       标签名称
      * @param component 显示内容
-     * @param weight 标签名称宽度
      * @return 水平带label的panel
      */
     @NotNull
-    protected static JPanel createLineLabelPanel(@NotNull String tag, @NotNull JComponent component,@NotNull Integer weight) {
+    protected static JPanel createLineLabelPanel(int weight, @NotNull String tag, @NotNull JComponent component) {
         JPanel labelPanel = new JPanel(new BorderLayout());
         labelPanel.setBorder(IdeBorderFactory.createBorder());
 
@@ -136,7 +136,7 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
         labelPanel.setBorder(IdeBorderFactory.createBorder());
 
         JBLabel label = new JBLabel(tag);
-        label.setPreferredSize(JBUI.size(0, 35));
+        label.setPreferredSize(JBUI.size(-1, 35));
         label.setBorder(JBUI.Borders.emptyLeft(10));
 
         component.setBorder(new CustomLineBorder(JBUI.insetsTop(1)));

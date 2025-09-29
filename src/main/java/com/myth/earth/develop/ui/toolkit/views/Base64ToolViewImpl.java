@@ -57,8 +57,8 @@ public class Base64ToolViewImpl extends AbstractToolView {
         JBTextArea htmlTextArea = createTextArea();
 
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(createLineLabelPanel("选择图片", imageTextField, 80), BorderLayout.CENTER);
-        topPanel.add(createButton("转换", e -> {
+        topPanel.add(createLineLabelPanel(80, "选择图片", imageTextField), BorderLayout.CENTER);
+        topPanel.add(createButton(50, "转换", e -> {
             String filePath = imageTextField.getText();
             if (filePath.isEmpty()) {
                 return;

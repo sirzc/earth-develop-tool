@@ -29,7 +29,6 @@ import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.kit.ClipboardKit;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
-import org.jdesktop.swingx.HorizontalLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -85,7 +84,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
         ComboBox<String> timeZoneBox2 = createTimeZoneBox();
         JBTextField fromDateTimeField = createTextField(currentDate);
         JBTextField toTimestampField = createTextField(currentTimeMillis);
-        JButton toTimestampButton = createButton("转换", e -> {
+        JButton toTimestampButton = createButton(50, "转换", e -> {
             try {
                 String dateTimeText = fromDateTimeField.getText().trim();
                 if (dateTimeText.isEmpty()) {
@@ -123,7 +122,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
         ComboBox<String> timeZoneBox1 = createTimeZoneBox();
         JBTextField fromTimeField = createTextField(currentTimeMillis);
         JBTextField toDateField = createTextField(currentDate);
-        JButton toDateButton = createButton("转换", e -> {
+        JButton toDateButton = createButton(50, "转换", e -> {
             try {
                 String timestampText = fromTimeField.getText().trim();
                 if (timestampText.isEmpty()) {

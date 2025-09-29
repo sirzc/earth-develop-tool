@@ -46,15 +46,15 @@ public class JsonFormatToolViewImpl extends AbstractToolView {
         super(project);
         MyEditorTextField myEditorTextField = new MyEditorTextField(project, JsonFileType.INSTANCE);
         JPanel topPanel = new JPanel(new WrapLayout(WrapLayout.LEFT, 5, 5));
-        topPanel.add(createButton("格式化", e -> {
+        topPanel.add(createButton(65, "格式化", e -> {
             String text = myEditorTextField.getText();
             myEditorTextField.setText(formatJson(text));
         }));
-        topPanel.add(createButton("压缩", e -> {
+        topPanel.add(createButton(50, "压缩", e -> {
             String text = myEditorTextField.getText();
             myEditorTextField.setText(compressJson(text));
         }));
-        topPanel.add(createButton("复制到剪贴板", e -> {
+        topPanel.add(createButton(110, "复制到剪贴板", e -> {
             String text = myEditorTextField.getText();
             ClipboardKit.copy(text);
         }));

@@ -42,7 +42,7 @@ public class UUIDToolViewImpl extends AbstractToolView {
         JBTextField generateNumField = new JBTextField("1");
         JBCheckBox selectBox = new JBCheckBox("不带-");
         JBTextArea resultArea = createTextArea();
-        JButton generateButton = createButton("生成", e -> {
+        JButton generateButton = createButton(50, "生成", e -> {
             try {
                 int count = Integer.parseInt(generateNumField.getText());
                 boolean withoutHyphen = selectBox.isSelected();
@@ -63,7 +63,7 @@ public class UUIDToolViewImpl extends AbstractToolView {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 5));
-        topPanel.add(createLineLabelPanel("数量", generateNumField, 50));
+        topPanel.add(createLineLabelPanel(50, "数量", generateNumField));
         topPanel.add(Box.createHorizontalStrut(5));
         topPanel.add(selectBox);
         topPanel.add(Box.createHorizontalStrut(5));

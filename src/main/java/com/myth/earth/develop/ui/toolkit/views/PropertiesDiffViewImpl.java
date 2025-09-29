@@ -58,7 +58,7 @@ public class PropertiesDiffViewImpl extends AbstractToolView {
         TextFieldWithBrowseButton sourceTextField = buildFileSelectFieldButton(project);
         TextFieldWithBrowseButton targetTextField = buildFileSelectFieldButton(project);
 
-        JButton diffKeyButton = createButton("差异键", e -> {
+        JButton diffKeyButton = createButton(80, "差异键", e -> {
             try {
                 CompareResult compareResult = PropertiesCompareUtil.parseAndCompare(sourceTextField.getText(), targetTextField.getText());
                 Collection<String> sourceKeys = compareResult.getSourceKeys();
@@ -70,9 +70,8 @@ public class PropertiesDiffViewImpl extends AbstractToolView {
                 result2.setText("比较执行异常: " + ex.getMessage());
             }
         });
-        diffKeyButton.setPreferredSize(JBUI.size(80, 35));
 
-        JButton diffValueButton = createButton("差异值", e -> {
+        JButton diffValueButton = createButton(80, "差异值", e -> {
             try {
                 CompareResult compareResult = PropertiesCompareUtil.parseAndCompare(sourceTextField.getText(), targetTextField.getText());
                 Collection<DifferenceResult> differenceResults = compareResult.getDifferenceResults();
@@ -85,14 +84,13 @@ public class PropertiesDiffViewImpl extends AbstractToolView {
                 result2.setText("比较执行异常: " + ex.getMessage());
             }
         });
-        diffValueButton.setPreferredSize(JBUI.size(80, 35));
 
         JPanel sourcePanel = new JPanel(new BorderLayout());
-        sourcePanel.add(createLineLabelPanel("Properties1", sourceTextField, 100), BorderLayout.CENTER);
+        sourcePanel.add(createLineLabelPanel(100, "Properties1", sourceTextField), BorderLayout.CENTER);
         sourcePanel.add(diffKeyButton, BorderLayout.EAST);
 
         JPanel targetPanel = new JPanel(new BorderLayout());
-        targetPanel.add(createLineLabelPanel("Properties2", targetTextField, 100), BorderLayout.CENTER);
+        targetPanel.add(createLineLabelPanel(100, "Properties2", targetTextField), BorderLayout.CENTER);
         targetPanel.add(diffValueButton, BorderLayout.EAST);
 
         JPanel centerPanel = FormBuilder.createFormBuilder()

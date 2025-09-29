@@ -47,7 +47,7 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
         toRadixBox.setSelectedItem("16");
 
         // 创建转换按钮
-        JButton convertButton = createButton("转换", e -> convert());
+        JButton convertButton = createButton(50, "转换", e -> convert());
 
         // 创建面板布局
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
