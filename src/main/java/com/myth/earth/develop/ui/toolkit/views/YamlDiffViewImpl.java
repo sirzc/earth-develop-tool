@@ -38,11 +38,11 @@ import java.util.stream.Collectors;
 
 /**
  * yaml文件比较工具
- * 
+ *
  * @author zhouchao
  * @date 2025/9/30 下午5:42
  **/
-@Tool(category = ToolCategory.DIFF, name = "Yaml差异", description = "比较yaml文件key、value差异")
+@Tool(category = ToolCategory.DIFF, name = "Yaml差异", description = "比较yaml、yml文件key、value差异")
 public class YamlDiffViewImpl extends AbstractToolView {
 
     public YamlDiffViewImpl(@NotNull Project project) {
@@ -108,7 +108,7 @@ public class YamlDiffViewImpl extends AbstractToolView {
         TextFieldWithBrowseButton formFilePathField = new TextFieldWithBrowseButton();
         formFilePathField.getTextField().setBorder(JBUI.Borders.empty());
         FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(true, false, false, false, false, false);
-        fileChooserDescriptor.withFileFilter(virtualFile -> YamlCompareUtil.FILE_TYPE.equals(virtualFile.getExtension()));
+        fileChooserDescriptor.withFileFilter(virtualFile -> YamlCompareUtil.FILE_TYPE.equals(virtualFile.getExtension()) || YamlCompareUtil.SHORT_FILE_TYPE.equals(virtualFile.getExtension()));
         // 自定义文件选择后的处理逻辑
         formFilePathField.addActionListener(e -> {
             VirtualFile file = FileChooser.chooseFile(fileChooserDescriptor, project, null);

@@ -33,7 +33,8 @@ import java.util.*;
  */
 public class YamlCompareUtil {
 
-    public static final String FILE_TYPE = "yaml";
+    public static final String FILE_TYPE       = "yaml";
+    public static final String SHORT_FILE_TYPE = "yml";
 
     public static Map<String, Object> parseYaml(String filePath) {
         try (InputStream inputStream = new FileInputStream(filePath)) {
