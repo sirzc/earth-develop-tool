@@ -33,6 +33,9 @@
                 <li><em>JSON Formatter</em>: Supports formatting and compressing JSON strings.</li>
                 <li><em>Radix Converter</em>: Supports conversion between binary, octal, decimal, and hexadecimal numbers.</li>
                 <li><em>Image to Base64</em>: Quickly convert image files into Base64 encoded strings.</li>
+                <li><em>Druid Encryption/Decryption</em>: Supports encryption and decryption functions for Druid database connection pool.</li>
+                <li><em>Properties Difference Comparison</em>: Quickly compare differences between two Properties configuration files.</li>
+                <li><em>YAML Difference Comparison</em>: Quickly compare differences between two YAML configuration files.</li>
             </ul>
 
             <h2>中文描述</h2>
@@ -46,6 +49,9 @@
                 <li><em>JSON格式化</em>：支持JSON字符串的格式化和压缩功能。</li>
                 <li><em>进制转换</em>：支持二进制、八进制、十进制、十六进制之间的相互转换。</li>
                 <li><em>图片转Base64</em>：将图片文件快速转换为Base64编码字符串。</li>
+                <li><em>Druid加解密</em>：支持Druid数据库连接池的加密与解密功能。</li>
+                <li><em>Properties差异对比</em>：快速对比两个Properties配置文件的差异。</li>
+                <li><em>YAML差异对比</em>：快速对比两个YAML配置文件的差异。</li>
             </ul>
         ]]>
     </description>
