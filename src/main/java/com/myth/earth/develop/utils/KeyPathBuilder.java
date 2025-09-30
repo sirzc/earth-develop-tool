@@ -13,42 +13,36 @@
  *  limitations under the License.
  */
 
-package com.myth.earth.develop.ui.toolkit.core;
-
-import lombok.Getter;
-
-import javax.swing.*;
+package com.myth.earth.develop.utils;
 
 /**
- * 工具分组
+ * 构建路径key
  *
  * @author zhouchao
- * @date 2025-09-07 下午9:25
+ * @date 2025-09-30 下午5:32
  */
-@Getter
-public enum ToolCategory {
+public class KeyPathBuilder {
+    private final String currentPath;
+    private static final String SEPARATOR = ".";
 
-    DEFAULT("默认", null),
-    DEVELOP("开发工具", null),
-    DIFF("差异比较", null),
-    ENCODE("编码解码", null),
-    NUMBER("数字工具", null),
-    NETWORK("网络工具", null),
-    IMAGE("图像工具", null)
-    ;
+    public KeyPathBuilder() {
+        this.currentPath = "";
+    }
 
-    /**
-     * 显示名称
-     */
-    private String name;
+    private KeyPathBuilder(String path) {
+        this.currentPath = path;
+    }
 
-    /**
-     * 显示图标
-     */
-    private Icon   icon;
+    public KeyPathBuilder append(String key) {
+        if (currentPath.isEmpty()) {
+            return new KeyPathBuilder(key);
+        } else {
+            return new KeyPathBuilder(currentPath + SEPARATOR + key);
+        }
+    }
 
-    ToolCategory(String name, Icon icon) {
-        this.name = name;
-        this.icon = icon;
+    @Override
+    public String toString() {
+        return currentPath;
     }
 }
