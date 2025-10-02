@@ -41,10 +41,11 @@ import java.awt.*;
 public class JsonFormatToolViewImpl extends AbstractToolView {
 
     public static final String SHOW_TIP = "<html><body><b style='color:orange;'>所有操作与编辑器中快捷键一致，如Win版中：Ctrl + F 搜索、Ctrl + Alt + L 格式化</b></body></html>";
+    private final MyEditorTextField myEditorTextField;
 
     public JsonFormatToolViewImpl(@NotNull Project project) {
         super(project);
-        MyEditorTextField myEditorTextField = new MyEditorTextField(project, JsonFileType.INSTANCE);
+        myEditorTextField = new MyEditorTextField(project, JsonFileType.INSTANCE);
         JPanel topPanel = new JPanel(new WrapLayout(WrapLayout.LEFT, 5, 5));
         topPanel.add(createButton(65, "格式化", e -> {
             String text = myEditorTextField.getText();
@@ -105,4 +106,8 @@ public class JsonFormatToolViewImpl extends AbstractToolView {
         }
     }
 
+    @Override
+    public void manualRefresh() {
+        myEditorTextField.setText(null);
+    }
 }

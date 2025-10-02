@@ -45,17 +45,22 @@ import java.util.stream.Collectors;
 @Tool(category = ToolCategory.DIFF, name = "Yaml差异", description = "比较yaml、yml文件key、value差异")
 public class YamlDiffViewImpl extends AbstractToolView {
 
+    private final JBTextArea                result1;
+    private final JBTextArea                result2;
+    private final TextFieldWithBrowseButton sourceTextField;
+    private final TextFieldWithBrowseButton targetTextField;
+
     public YamlDiffViewImpl(@NotNull Project project) {
         super(project);
 
-        JBTextArea result1 = createTextArea();
+        result1 = createTextArea();
         result1.getEmptyText().setText("仅展示Yaml1中存在的内容");
 
-        JBTextArea result2 = createTextArea();
+        result2 = createTextArea();
         result2.getEmptyText().setText("仅展示Yaml2中存在的内容");
 
-        TextFieldWithBrowseButton sourceTextField = buildFileSelectFieldButton(project);
-        TextFieldWithBrowseButton targetTextField = buildFileSelectFieldButton(project);
+        sourceTextField = buildFileSelectFieldButton(project);
+        targetTextField = buildFileSelectFieldButton(project);
 
         JButton diffKeyButton = createButton(80, "差异键", e -> {
             try {
@@ -117,5 +122,13 @@ public class YamlDiffViewImpl extends AbstractToolView {
             }
         });
         return formFilePathField;
+    }
+
+    @Override
+    public void manualRefresh() {
+        sourceTextField.setText(null);
+        targetTextField.setText(null);
+        result1.setText(null);
+        result2.setText(null);
     }
 }

@@ -51,6 +51,14 @@ import java.util.Set;
 public class TimestampToolViewImpl extends AbstractToolView {
 
     private final ExtendableTextField extendableTextField;
+    private       ComboBox<String>    timeUnitBox2;
+    private       ComboBox<String>    timeZoneBox2;
+    private       JBTextField         fromDateTimeField;
+    private       JBTextField         toTimestampField;
+    private       ComboBox<String>    timeUnitBox1;
+    private       ComboBox<String>    timeZoneBox1;
+    private       JBTextField         fromTimeField;
+    private       JBTextField         toDateField;
 
     public TimestampToolViewImpl(@NotNull Project project) {
         super(project);
@@ -79,11 +87,11 @@ public class TimestampToolViewImpl extends AbstractToolView {
         add(centerPanel, BorderLayout.NORTH);
     }
 
-    private static @NotNull JPanel createTimestampPanel(String currentDate, String currentTimeMillis) {
-        ComboBox<String> timeUnitBox2 = createTimeUnitBox();
-        ComboBox<String> timeZoneBox2 = createTimeZoneBox();
-        JBTextField fromDateTimeField = createTextField(currentDate);
-        JBTextField toTimestampField = createTextField(currentTimeMillis);
+    private @NotNull JPanel createTimestampPanel(String currentDate, String currentTimeMillis) {
+        timeUnitBox2 = createTimeUnitBox();
+        timeZoneBox2 = createTimeZoneBox();
+        fromDateTimeField = createTextField(currentDate);
+        toTimestampField = createTextField(currentTimeMillis);
         JButton toTimestampButton = createButton(50, "转换", e -> {
             try {
                 String dateTimeText = fromDateTimeField.getText().trim();
@@ -117,11 +125,11 @@ public class TimestampToolViewImpl extends AbstractToolView {
         return toTimestampPanel;
     }
 
-    private static @NotNull JPanel createToDatePanel(String currentDate, String currentTimeMillis) {
-        ComboBox<String> timeUnitBox1 = createTimeUnitBox();
-        ComboBox<String> timeZoneBox1 = createTimeZoneBox();
-        JBTextField fromTimeField = createTextField(currentTimeMillis);
-        JBTextField toDateField = createTextField(currentDate);
+    private @NotNull JPanel createToDatePanel(String currentDate, String currentTimeMillis) {
+        timeUnitBox1 = createTimeUnitBox();
+        timeZoneBox1 = createTimeZoneBox();
+        fromTimeField = createTextField(currentTimeMillis);
+        toDateField = createTextField(currentDate);
         JButton toDateButton = createButton(50, "转换", e -> {
             try {
                 String timestampText = fromTimeField.getText().trim();
@@ -161,12 +169,12 @@ public class TimestampToolViewImpl extends AbstractToolView {
         extendableTextField.setText(String.valueOf(System.currentTimeMillis()));
     }
 
-    private static @NotNull JBTextField createTextField(String currentTimeMillis) {
+    private @NotNull JBTextField createTextField(String currentTimeMillis) {
         // fromTimeField.setPreferredSize(JBUI.size(150, 35));
         return new JBTextField(currentTimeMillis);
     }
 
-    private static @NotNull ComboBox<String> createTimeZoneBox() {
+    private @NotNull ComboBox<String> createTimeZoneBox() {
         // 获取所有可用时区ID
         ComboBox<String> comboBox = new ComboBox<>();
         comboBox.setPreferredSize(JBUI.size(130,35));
@@ -195,5 +203,23 @@ public class TimestampToolViewImpl extends AbstractToolView {
         comboBox.addItem("ms");
         comboBox.addItem("s");
         return comboBox;
+    }
+
+    @Override
+    public void manualRefresh() {
+        Date date = new Date();
+        String dateFormat = DateUtil.format(date, DatePattern.NORM_DATETIME_PATTERN);
+        String time = String.valueOf(date.getTime());
+        extendableTextField.setText(time);
+        // 设置时间戳转日期时间部分的默认值
+        timeUnitBox1.setSelectedItem("ms");
+        timeZoneBox1.setSelectedItem("Asia/Shanghai");
+        fromTimeField.setText(time);
+        toDateField.setText(dateFormat);
+        // 设置日期时间转时间戳部分的默认值
+        timeUnitBox2.setSelectedItem("ms");
+        timeZoneBox2.setSelectedItem("Asia/Shanghai");
+        fromDateTimeField.setText(dateFormat);
+        toTimestampField.setText(time);
     }
 }

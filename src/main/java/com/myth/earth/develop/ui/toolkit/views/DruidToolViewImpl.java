@@ -39,29 +39,38 @@ import java.awt.*;
 @Tool(category = ToolCategory.ENCODE, name = "Druid加解密", description = "支持Druid加密、解密")
 public class DruidToolViewImpl extends AbstractToolView {
 
+    private final LabelTextField privateKeyField;
+    private final LabelTextField publicKeyField;
+    private final LabelTextField encryptResultField;
+    private final LabelTextField encryptPasswordField;
+    private final LabelTextField decryptPublicKeyField;
+    private final LabelTextField decryptPasswordField;
+    private final LabelTextField decryptResultField;
+    private final JBTextArea propertiesTextArea;
+
     public DruidToolViewImpl(@NotNull Project project) {
         super(project);
 
         // 加密面板
-        LabelTextField privateKeyField = createLabelTextField("privateKey", true);
-        LabelTextField publicKeyField = createLabelTextField("publicKey", true);
-        LabelTextField encryptResultField = createLabelTextField("password", true);
-        LabelTextField encryptPasswordField = createLabelTextField("Input", false);
+        privateKeyField = createLabelTextField("privateKey", true);
+        publicKeyField = createLabelTextField("publicKey", true);
+        encryptResultField = createLabelTextField("password", true);
+        encryptPasswordField = createLabelTextField("Input", false);
         JButton encryptButton = new JButton("加密");
         JPanel encryptPanel = new JPanel(new BorderLayout());
         encryptPanel.add(encryptPasswordField, BorderLayout.CENTER);
         encryptPanel.add(encryptButton, BorderLayout.EAST);
 
         // 解密面板
-        LabelTextField decryptPublicKeyField = createLabelTextField("publicKey", false);
-        LabelTextField decryptPasswordField = createLabelTextField("password", false);
-        LabelTextField decryptResultField = createLabelTextField("Output", true);
+        decryptPublicKeyField = createLabelTextField("publicKey", false);
+        decryptPasswordField = createLabelTextField("password", false);
+        decryptResultField = createLabelTextField("Output", true);
         JButton decryptButton = new JButton("解密");
         JPanel decryptPanel = new JPanel(new BorderLayout());
         decryptPanel.add(decryptResultField, BorderLayout.CENTER);
         decryptPanel.add(decryptButton, BorderLayout.EAST);
 
-        JBTextArea propertiesTextArea = createTextArea();
+        propertiesTextArea = createTextArea();
         propertiesTextArea.setEditable(true);
         propertiesTextArea.setPreferredSize(JBUI.size(-1, 120));
 
@@ -119,5 +128,17 @@ public class DruidToolViewImpl extends AbstractToolView {
         LabelTextField labelTextField = new LabelTextField(tag, openCopy);
         labelTextField.setLabelSize(85, -1);
         return labelTextField;
+    }
+
+    @Override
+    public void manualRefresh() {
+        privateKeyField.setText(null);
+        publicKeyField.setText(null);
+        encryptResultField.setText(null);
+        encryptPasswordField.setText(null);
+        decryptPublicKeyField.setText(null);
+        decryptPasswordField.setText(null);
+        decryptResultField.setText(null);
+        propertiesTextArea.setText(null);
     }
 }

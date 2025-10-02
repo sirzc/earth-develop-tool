@@ -37,11 +37,14 @@ import java.util.UUID;
 @Tool(category = ToolCategory.DEVELOP, name = "UUID生成器", description = "批量生成UUID、带-、不带-")
 public class UUIDToolViewImpl extends AbstractToolView {
 
+    private final JBTextField generateNumField;
+    private final JBTextArea resultArea;
+
     public UUIDToolViewImpl(@NotNull Project project) {
         super(project);
-        JBTextField generateNumField = new JBTextField("1");
+        generateNumField = new JBTextField("1");
         JBCheckBox selectBox = new JBCheckBox("不带-");
-        JBTextArea resultArea = createTextArea();
+        resultArea = createTextArea();
         JButton generateButton = createButton(50, "生成", e -> {
             try {
                 int count = Integer.parseInt(generateNumField.getText());
@@ -75,5 +78,11 @@ public class UUIDToolViewImpl extends AbstractToolView {
 
         add(topPanel, BorderLayout.NORTH);
         add(jbScrollPane, BorderLayout.CENTER);
+    }
+
+    @Override
+    public void manualRefresh() {
+        generateNumField.setText("1");
+        resultArea.setText(null);
     }
 }

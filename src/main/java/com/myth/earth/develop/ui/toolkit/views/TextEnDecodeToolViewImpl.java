@@ -252,4 +252,10 @@ public class TextEnDecodeToolViewImpl extends AbstractToolView {
         }
         return result;
     }
+
+    @Override
+    public void manualRefresh() {
+        inputTextArea.setText(null);
+        outputTextArea.setText(null);
+    }
 }

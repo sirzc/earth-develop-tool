@@ -44,17 +44,18 @@ import java.util.List;
 public class Base64ToolViewImpl extends AbstractToolView {
 
     private static final List<String> SUPPORTED_IMAGE_TYPES = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "svg", "webp");
+    private final TextFieldWithBrowseButton imageTextField;
+    private final JBTextArea dataUriTextArea;
+    private final JBTextArea cssTextArea;
+    private final JBTextArea htmlTextArea;
 
     public Base64ToolViewImpl(@NotNull Project project) {
         super(project);
-        TextFieldWithBrowseButton imageTextField = buildFileSelectFieldButton(project);
+        imageTextField = buildFileSelectFieldButton(project);
         imageTextField.getTextField().setBorder(JBUI.Borders.empty());
-
-        JBTextArea dataUriTextArea = createTextArea();
-
-        JBTextArea cssTextArea = createTextArea();
-
-        JBTextArea htmlTextArea = createTextArea();
+        dataUriTextArea = createTextArea();
+        cssTextArea = createTextArea();
+        htmlTextArea = createTextArea();
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(createLineLabelPanel(80, "选择图片", imageTextField), BorderLayout.CENTER);
@@ -149,5 +150,13 @@ public class Base64ToolViewImpl extends AbstractToolView {
             default:
                 return "image/" + extension;
         }
+    }
+
+    @Override
+    public void manualRefresh() {
+        imageTextField.setText(null);
+        dataUriTextArea.setText(null);
+        cssTextArea.setText(null);
+        htmlTextArea.setText(null);
     }
 }

@@ -188,4 +188,9 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
         return comboBox;
     }
 
+    @Override
+    public void manualRefresh() {
+        inputTextArea.setText(null);
+        outputTextArea.setText(null);
+    }
 }
