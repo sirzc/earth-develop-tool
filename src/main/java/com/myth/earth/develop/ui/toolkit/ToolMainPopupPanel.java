@@ -271,6 +271,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
 
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.addAction(new ToolkitHomeAction());
+        actionGroup.addAction(new ManualRefreshAction());
         actionGroup.addAction(new ResizeViewAction());
         actionGroup.addAction(new LikeHomeAction());
         actionGroup.addAction(new FixedWindowAction());
@@ -408,6 +409,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
 
         @Override
         public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+            toolTree.clearSelection();
             refreshToolCustomizerPanel(welcomeScrollPanel);
         }
     }
@@ -420,6 +422,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
 
         @Override
         public void actionPerformed(@NotNull AnActionEvent e) {
+            toolTree.clearSelection();
             refreshToolCustomizerPanel(earthSupportPanel);
         }
     }
@@ -457,6 +460,36 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
             Presentation presentation = e.getPresentation();
             presentation.setText(isMax ? "最小" : "最大");
             presentation.setIcon(isMax ? PluginIcons.MIN_16X16 : PluginIcons.MAX_16X16);
+        }
+    }
+
+    private class ManualRefreshAction extends AnAction {
+
+        public ManualRefreshAction() {
+            super("Refresh", "Refresh view", AllIcons.Actions.Refresh);
+        }
+
+        @Override
+        public void actionPerformed(@NotNull AnActionEvent e) {
+            DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) toolTree.getLastSelectedPathComponent();
+            if (selectedNode == null) {
+                return;
+            }
+
+            Class<? extends ToolView> toolViewClass = toolNodeMapper.get(selectedNode);
+            if (toolViewClass == null) {
+               return;
+            }
+
+            ToolView toolView = ToolkitProjectService.getInstance(project).get(toolViewClass);
+            toolView.manualRefresh();
+        }
+
+        @Override
+        public void update(@NotNull AnActionEvent e) {
+            Presentation presentation = e.getPresentation();
+            DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) toolTree.getLastSelectedPathComponent();
+            presentation.setEnabled(selectedNode != null && selectedNode.isLeaf());
         }
     }
 }

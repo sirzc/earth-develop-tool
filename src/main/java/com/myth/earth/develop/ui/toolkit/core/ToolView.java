@@ -15,7 +15,6 @@
 
 package com.myth.earth.develop.ui.toolkit.core;
 
-import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -35,4 +34,11 @@ public interface ToolView {
      */
     @NotNull
     JComponent refreshView();
+
+    /**
+     * 手动刷新执行操作
+     */
+    default void manualRefresh() {
+        System.out.println("refresh:" + this.getClass().getName());
+    }
 }
