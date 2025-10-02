@@ -304,9 +304,15 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         label.setBorder(JBUI.Borders.empty(5));
         label.setBackground(LABEL_BACKGROUND);
         label.setOpaque(true);
-        label.setAndUpdateText("可使用搜索快速选择工具！");
+        label.setAndUpdateText("Earth Develop Tool专为研发打造的工具箱！");
         label.setPreferredSize(JBUI.size(0, 25));
         label.updateUI();
+        // label.addHyperlinkListener(new HyperlinkAdapter() {
+        //     @Override
+        //     protected void hyperlinkActivated(HyperlinkEvent e) {
+        //
+        //     }
+        // });
         return label;
     }
 
@@ -410,6 +416,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         @Override
         public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
             toolTree.clearSelection();
+            refreshHintContent("Earth Develop Tool专为研发打造的工具箱！");
             refreshToolCustomizerPanel(welcomeScrollPanel);
         }
     }
@@ -423,6 +430,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         @Override
         public void actionPerformed(@NotNull AnActionEvent e) {
             toolTree.clearSelection();
+            refreshHintContent("更多Earth相关插件，等待你的发现！打开 <a href='https://plugins.jetbrains.com/'>插件市场</a> 搜索Earth...");
             refreshToolCustomizerPanel(earthSupportPanel);
         }
     }
