@@ -30,6 +30,12 @@ import java.io.File;
 import java.io.StringReader;
 import java.util.*;
 
+/**
+ * xml比较工具
+ *
+ * @author zhouchao
+ * @date 2025/10/7 下午5:56
+ **/
 public class XmlCompareUtil {
 
     private static final DocumentBuilderFactory factory   = DocumentBuilderFactory.newInstance();

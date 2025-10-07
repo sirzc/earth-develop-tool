@@ -26,6 +26,7 @@ import com.myth.earth.develop.kit.ClipboardKit;
 import com.myth.earth.develop.ui.component.MyEditorTextField;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
+import org.apache.commons.text.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -37,7 +38,7 @@ import java.awt.*;
  * @author zhouchao
  * @date 2025-09-13 下午4:32
  */
-@Tool(category = ToolCategory.DEVELOP, name = "JSON格式化", description = "JSON字符串格式化工具")
+@Tool(category = ToolCategory.DEVELOP, name = "JSON格式化", description = "JSON字符串格式化、压缩、转义、去转义")
 public class JsonFormatToolViewImpl extends AbstractToolView {
 
     public static final String SHOW_TIP = "<html><body><b style='color:orange;'>所有操作与编辑器中快捷键一致，如Win版中：Ctrl + F 搜索、Ctrl + Alt + L 格式化</b></body></html>";
@@ -54,6 +55,14 @@ public class JsonFormatToolViewImpl extends AbstractToolView {
         topPanel.add(createButton(50, "压缩", e -> {
             String text = myEditorTextField.getText();
             myEditorTextField.setText(compressJson(text));
+        }));
+        topPanel.add(createButton(50, "转义", e -> {
+            String text = myEditorTextField.getText();
+            myEditorTextField.setText(StringEscapeUtils.escapeJson(text));
+        }));
+        topPanel.add(createButton(65, "去转义", e -> {
+            String text = myEditorTextField.getText();
+            myEditorTextField.setText(StringEscapeUtils.unescapeJson(text));
         }));
         topPanel.add(createButton(110, "复制到剪贴板", e -> {
             String text = myEditorTextField.getText();
