@@ -34,6 +34,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,8 +67,8 @@ public class PropertiesDiffViewImpl extends AbstractToolView {
         JButton diffKeyButton = createButton(80, "差异键", e -> {
             try {
                 CompareResult compareResult = PropertiesCompareUtil.parseAndCompare(sourceTextField.getText(), targetTextField.getText());
-                Collection<String> sourceKeys = compareResult.getSourceKeys();
-                Collection<String> targetKeys = compareResult.getTargetKeys();
+                Collection<String> sourceKeys = compareResult.getSourceKeys().stream().sorted().collect(Collectors.toList());
+                Collection<String> targetKeys = compareResult.getTargetKeys().stream().sorted().collect(Collectors.toList());
                 result1.setText(String.join("\n", sourceKeys));
                 result2.setText(String.join("\n", targetKeys));
             } catch (IOException ex) {
@@ -80,8 +81,14 @@ public class PropertiesDiffViewImpl extends AbstractToolView {
             try {
                 CompareResult compareResult = PropertiesCompareUtil.parseAndCompare(sourceTextField.getText(), targetTextField.getText());
                 Collection<DifferenceResult> differenceResults = compareResult.getDifferenceResults();
-                List<String> sources = differenceResults.stream().map(dr -> dr.getKey() + "=" + dr.getSource()).collect(Collectors.toList());
-                List<String> targets = differenceResults.stream().map(dr -> dr.getKey() + "=" + dr.getTarget()).collect(Collectors.toList());
+                List<String> sources = differenceResults.stream()
+                                                        .sorted(Comparator.comparing(DifferenceResult::getKey))
+                                                        .map(dr -> dr.getKey() + "=" + dr.getSource())
+                                                        .collect(Collectors.toList());
+                List<String> targets = differenceResults.stream()
+                                                        .sorted(Comparator.comparing(DifferenceResult::getKey))
+                                                        .map(dr -> dr.getKey() + "=" + dr.getTarget())
+                                                        .collect(Collectors.toList());
                 result1.setText(String.join("\n", sources));
                 result2.setText(String.join("\n", targets));
             } catch (IOException ex) {
