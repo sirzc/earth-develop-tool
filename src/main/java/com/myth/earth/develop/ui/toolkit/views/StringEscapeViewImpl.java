@@ -57,11 +57,18 @@ public class StringEscapeViewImpl extends AbstractToolView {
         outputTextArea = createTextArea();
 
         optionBox = new ComboBox<>();
+        optionBox.setBorder(BorderFactory.createEmptyBorder());
+        optionBox.setBackground(COMBOBOX_COLOR);
+
         ESCAPE_OPTIONS.forEach(optionBox::addItem);
+
+        JPanel optionBoxPanel = new JPanel(new BorderLayout());
+        optionBoxPanel.setBackground(COMBOBOX_COLOR);
+        optionBoxPanel.add(optionBox, BorderLayout.CENTER);
 
         JPanel topPanel = new JPanel(new HorizontalLayout());
         topPanel.setBorder(JBUI.Borders.empty());
-        topPanel.add(createLineLabelPanel(80, "文本类型", optionBox));
+        topPanel.add(createLineLabelPanel(80, "文本类型", optionBoxPanel));
         topPanel.add(Box.createHorizontalStrut(5));
         topPanel.add(createButton(50, "交换", e -> {
             String inputText = inputTextArea.getText();
