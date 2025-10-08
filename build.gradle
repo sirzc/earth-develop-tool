@@ -16,6 +16,7 @@ dependencies {
     implementation 'cn.hutool:hutool-crypto:5.8.35'
     implementation 'org.yaml:snakeyaml:2.0'
     implementation 'org.apache.commons:commons-text:1.14.0'
+    implementation 'com.google.zxing:core:3.0.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
