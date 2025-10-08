@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.myth.earth'
-version '1.3'
+version '1.4'
 
 repositories {
     mavenCentral()
@@ -33,7 +33,9 @@ patchPluginXml {
     changeNotes = """
       <h3>版本更新: ${project.version}</h3>
       <ul>
-        <li>新增：yaml比较</li>
+        <li>新增：JSON比较</li>
+        <li>新增：Xml比较</li>
+        <li>新增：内容转义</li>
       </ul>
     """
 }
@@ -44,4 +46,10 @@ test {
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
+}
+
+tasks.register('copyPluginZip', Copy) {
+    dependsOn buildPlugin
+    from file("$buildDir/distributions/${rootProject.name}-${version}.zip")
+    into file(System.getProperty("user.home") + "/Documents/application-work/P0-plugin-zip/plugins")
 }
