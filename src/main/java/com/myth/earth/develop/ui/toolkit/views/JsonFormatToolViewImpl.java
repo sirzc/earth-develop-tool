@@ -18,9 +18,6 @@ package com.myth.earth.develop.ui.toolkit.views;
 import com.google.gson.*;
 import com.intellij.json.JsonFileType;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.border.CustomLineBorder;
-import com.intellij.ui.components.JBLabel;
-import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.WrapLayout;
 import com.myth.earth.develop.kit.ClipboardKit;
 import com.myth.earth.develop.ui.component.MyEditorTextField;
@@ -41,7 +38,7 @@ import java.awt.*;
 @Tool(category = ToolCategory.DEVELOP, name = "JSON格式化", description = "JSON字符串格式化、压缩、转义、去转义")
 public class JsonFormatToolViewImpl extends AbstractToolView {
 
-    public static final String SHOW_TIP = "<html><body><b style='color:orange;'>所有操作与编辑器中快捷键一致，如Win版中：Ctrl + F 搜索、Ctrl + Alt + L 格式化</b></body></html>";
+    public static final String SHOW_TIP = "<html><body><b style='color:orange;'>「所有操作与编辑器中快捷键一致，如Win版中：Ctrl + F 搜索、Ctrl + Alt + L 格式化」</b></body></html>";
     private final MyEditorTextField myEditorTextField;
 
     public JsonFormatToolViewImpl(@NotNull Project project) {
@@ -69,13 +66,11 @@ public class JsonFormatToolViewImpl extends AbstractToolView {
             ClipboardKit.copy(text);
         }));
 
-        JBLabel bottomPanel = new JBLabel(SHOW_TIP);
         JPanel centerPanel = new JPanel(new BorderLayout());
-        centerPanel.setBorder(new CustomLineBorder(JBUI.insets(1)));
         centerPanel.add(myEditorTextField, BorderLayout.CENTER);
+
         add(topPanel, BorderLayout.NORTH);
-        add(centerPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
+        add(createBoxLabelPanel(SHOW_TIP, centerPanel), BorderLayout.CENTER);
     }
 
     /**
