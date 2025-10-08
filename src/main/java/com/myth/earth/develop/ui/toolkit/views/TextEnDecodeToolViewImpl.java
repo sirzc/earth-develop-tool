@@ -76,6 +76,8 @@ public class TextEnDecodeToolViewImpl extends AbstractToolView {
         signPanel.setVisible(false);
 
         optionBox = new ComboBox<>();
+        optionBox.setBorder(BorderFactory.createEmptyBorder());
+        optionBox.setBackground(COMBOBOX_COLOR);
         ENCODE_OPTIONS.forEach(optionBox::addItem);
 
         optionBox.addActionListener(e -> {
@@ -109,9 +111,13 @@ public class TextEnDecodeToolViewImpl extends AbstractToolView {
         buttonGroup.add(encodeRadio);
         buttonGroup.add(decodeRadio);
 
+        JPanel optionBoxPanel = new JPanel(new BorderLayout());
+        optionBoxPanel.setBackground(COMBOBOX_COLOR);
+        optionBoxPanel.add(optionBox, BorderLayout.CENTER);
+
         JPanel topPanel = new JPanel(new HorizontalLayout());
         topPanel.setBorder(JBUI.Borders.empty());
-        topPanel.add(createLineLabelPanel(80, "加密方式", optionBox));
+        topPanel.add(createLineLabelPanel(80, "加密方式", optionBoxPanel));
         topPanel.add(Box.createHorizontalStrut(5));
         topPanel.add(encodeRadio);
         topPanel.add(decodeRadio);

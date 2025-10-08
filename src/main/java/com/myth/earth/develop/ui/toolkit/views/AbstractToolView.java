@@ -15,8 +15,11 @@
 
 package com.myth.earth.develop.ui.toolkit.views;
 
+import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.BuildNumber;
 import com.intellij.ui.IdeBorderFactory;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
@@ -37,8 +40,21 @@ import java.awt.event.ActionListener;
  */
 public abstract class AbstractToolView extends JPanel implements ToolView {
 
-    private final JPanel  rootPanel;
-    protected     Project project;
+    public static final JBColor NEW_COMBOBOX_COLOR = new JBColor(0xFFFFFFFF, 0xFF393B40);
+    public static final JBColor OLD_COMBOBOX_COLOR = new JBColor(0xFFFFFFFF, 0xFF3B3F41);
+    public static final JBColor COMBOBOX_COLOR;
+    private final       JPanel  rootPanel;
+    protected           Project project;
+
+    static {
+        BuildNumber buildNumber = ApplicationInfo.getInstance().getBuild();
+        int baselineVersion = buildNumber.getBaselineVersion();
+        if (baselineVersion > 223) {
+            COMBOBOX_COLOR = NEW_COMBOBOX_COLOR;
+        } else {
+            COMBOBOX_COLOR = OLD_COMBOBOX_COLOR;
+        }
+    }
 
     public AbstractToolView(@NotNull Project project) {
         super(new BorderLayout());
@@ -127,7 +143,7 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
     /**
      * 创建一个label盒子panel
      *
-     * @param tag 标签名称
+     * @param tag       标签名称
      * @param component 显示内容
      * @return 上下结构带label的panel
      */
