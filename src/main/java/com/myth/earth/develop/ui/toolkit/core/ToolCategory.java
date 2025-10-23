@@ -34,7 +34,8 @@ public enum ToolCategory {
     ENCODE("编码解码", null),
     NUMBER("数字工具", null),
     NETWORK("网络工具", null),
-    IMAGE("图像工具", null)
+    IMAGE("图像工具", null),
+    SQL("SQL工具", null)
     ;
 
     /**
