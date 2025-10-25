@@ -40,23 +40,14 @@ public class SqlConverterToolViewImpl extends AbstractToolView {
         outputTextArea.setToolTipText("转换后的SQL语句");
 
         // 创建转换按钮
-        convertButton = new JButton("转换");
-        convertButton.addActionListener(e -> convert());
-
-        // 创建面板布局
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        topPanel.add(convertButton);
+        convertButton = createButton(50, "转换", e -> convert());
 
         JPanel centerPanel = FormBuilder.createFormBuilder()
-                .addComponentFillVertically(createBoxLabelPanel("MyBatis日志输入:", new JBScrollPane(inputTextArea)), 5)
-                .addComponentFillVertically(createBoxLabelPanel("SQL输出:", new JBScrollPane(outputTextArea)), 5)
-                .getPanel();
-
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(topPanel, BorderLayout.NORTH);
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
-
-        add(mainPanel, BorderLayout.CENTER);
+                                        .addComponent(convertButton)
+                                        .addComponentFillVertically(createBoxLabelPanel("MyBatis日志输入:", new JBScrollPane(inputTextArea)), 5)
+                                        .addComponentFillVertically(createBoxLabelPanel("SQL输出:", new JBScrollPane(outputTextArea)), 5)
+                                        .getPanel();
+        add(centerPanel, BorderLayout.CENTER);
     }
 
 
