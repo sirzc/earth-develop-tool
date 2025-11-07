@@ -14,7 +14,7 @@ gradle
 *.ipr
 out/
 !**/src/main/**/out/
-!**/src/test/**/out/
+**/src/test
 
 ### Eclipse ###
 .apt_generated

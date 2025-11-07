@@ -79,7 +79,7 @@ public class CopyableMessageDialog extends DialogWrapper {
     @Override
     public void doOKAction() {
         // 复制到剪贴板
-        StringSelection stringSelection = new StringSelection(input);
+        StringSelection stringSelection = new StringSelection(outputTextArea.getText());
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
         super.doOKAction();
     }
