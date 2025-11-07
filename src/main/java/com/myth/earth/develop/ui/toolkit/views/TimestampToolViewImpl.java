@@ -166,7 +166,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
 
     @Override
     public void refreshToolData() {
-        extendableTextField.setText(String.valueOf(System.currentTimeMillis()));
+        manualRefresh();
     }
 
     private @NotNull JBTextField createTextField(String currentTimeMillis) {

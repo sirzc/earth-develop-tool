@@ -16,7 +16,6 @@
 package com.myth.earth.develop.ui.toolkit;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.popup.ComponentPopupBuilder;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
@@ -53,7 +52,7 @@ public class ToolkitProjectService {
 
 
     public void showDialog() {
-        ComponentPopupBuilder builder = JBPopupFactory.getInstance()
+        JBPopup popup = JBPopupFactory.getInstance()
                                                       // 弹出内容 + 首选获取焦点的组件
                                                       .createComponentPopupBuilder(toolMainPopupPanel, toolMainPopupPanel.getSearchField())
                                                       // .setTitle("class search")
@@ -64,14 +63,16 @@ public class ToolkitProjectService {
                                                       .setCancelOnMouseOutCallback(toolMainPopupPanel)// 鼠标外移回调，仅在mac 全屏下才启作用
                                                       .addUserData("SIMPLE_WINDOW").setResizable(true).setMovable(true)
                                                       // .setDimensionServiceKey(project,KEY.getName(), true)
-                                                      .setLocateWithinScreenBounds(false);
-        JBPopup listPopup = builder.createPopup();
-        toolMainPopupPanel.refreshPopup(listPopup);
-        Disposer.register(listPopup, toolMainPopupPanel);
+                                                      .setLocateWithinScreenBounds(false)
+                                                      .createPopup();
+        toolMainPopupPanel.refreshPopupAndToolView(popup);
+        // 注册为父子关系
+        Disposer.register(popup, toolMainPopupPanel);
+        // 设置popup当前显示最小大小
         Dimension size = toolMainPopupPanel.getMinimumSize();
-        JBInsets.addTo(size, listPopup.getContent().getInsets());
-        listPopup.setMinimumSize(size);
-        listPopup.showCenteredInCurrentWindow(project);
+        JBInsets.addTo(size, popup.getContent().getInsets());
+        popup.setMinimumSize(size);
+        popup.showCenteredInCurrentWindow(project);
         //listPopup.showInBestPositionFor(dataContext);
     }
 }

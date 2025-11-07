@@ -84,6 +84,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     private final        EarthSupportPanel                                      earthSupportPanel;
     private              boolean                                                pinWindow;
     private              JBPopup                                                showPopup;
+    private              ToolView                                               toolView;
 
     public ToolMainPopupPanel(Project project, Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
         this.project = project;
@@ -155,7 +156,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
                             Tool tool = toolViewClass.getAnnotation(Tool.class);
                             refreshHintContent(tool.name() + "：" +tool.description());
                             // 展示具体工具内容
-                            ToolView toolView = ToolkitProjectService.getInstance(project).get(toolViewClass);
+                            toolView = ToolkitProjectService.getInstance(project).get(toolViewClass);
                             refreshToolCustomizerPanel(toolView.refreshView());
                         }
                     }
@@ -336,8 +337,11 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         return event.getID() == MouseEvent.MOUSE_PRESSED && !pinWindow;
     }
 
-    public void refreshPopup(@NotNull JBPopup popup) {
+    public void refreshPopupAndToolView(@NotNull JBPopup popup) {
         this.showPopup = popup;
+        if (toolView != null) {
+            toolView.refreshView();
+        }
     }
 
     public void refreshHintContent(String text) {
