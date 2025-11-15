@@ -22,6 +22,7 @@ import com.myth.earth.develop.model.ToolKitInfo;
 import com.myth.earth.develop.ui.tabel.BooleanColumnInfo;
 import com.myth.earth.develop.ui.tabel.StringColumnInfo;
 import com.myth.earth.develop.ui.toolkit.ToolkitGlobalState;
+import com.myth.earth.develop.ui.toolkit.ToolkitProjectService;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -89,7 +90,7 @@ public class ToolKitConfigDialog extends JDialog {
                                                   .collect(Collectors.toList());
         ToolkitGlobalState.getInstance().setHideToolKits(hideToolKits);
         // 刷新主页信息
-
+        ToolkitProjectService.getInstance(project).refreshWelcomePanel();
         // 在此处添加您的代码
         dispose();
     }

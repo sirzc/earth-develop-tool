@@ -75,6 +75,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     private static final Color                                                  LINE_COLOR       = new JBColor(Gray._189, Gray._100);
     private static final Color                                                  LABEL_BACKGROUND = new JBColor(Gray._234, new Color(69, 73, 74));
     private final        Project                                                project;
+    private final        Map<ToolCategory, List<Class<? extends ToolView>>>     toolCategoryListMap;
     private final        SearchTextField                                        mySearchField;
     private final        Tree                                                   toolTree;
     private final        JPanel                                                 toolCustomizerPanel;
@@ -88,6 +89,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
 
     public ToolMainPopupPanel(Project project, Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
         this.project = project;
+        this.toolCategoryListMap = toolCategoryListMap;
         this.mySearchField = createSearchField();
         this.mySearchField.setVisible(false);
         this.toolCustomizerPanel = new JPanel(new BorderLayout());
@@ -100,8 +102,8 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         this.welcomeScrollPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         this.earthSupportPanel = new EarthSupportPanel();
         initToolTreeAction();
-        initToolTreeData(toolCategoryListMap);
-        initWelcomePanel(toolCategoryListMap);
+        initToolTreeData();
+        initWelcomePanel();
 
         JPanel topLeftPanel = createTopLeftPanel();
         JPanel topRightPanel = createTopRightPanel();
@@ -130,15 +132,20 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         addToBottom(hintHtmlLabel);
     }
 
-    private void initWelcomePanel(Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
+    public void initWelcomePanel() {
+        List<String> hideToolKits = ToolkitGlobalState.getInstance().getHideToolKits();
         JPanel verticalPanel = new JPanel(new VerticalLayout());
         for (Map.Entry<ToolCategory, List<Class<? extends ToolView>>> entry : toolCategoryListMap.entrySet()) {
             ToolCategory category = entry.getKey();
             JPanel cardPanels = new JPanel(new WrapLayout(WrapLayout.LEFT, 5, 5));
             for (Class<? extends ToolView> toolViewClass : entry.getValue()) {
+                Tool tool = toolViewClass.getAnnotation(Tool.class);
+                if (hideToolKits.contains(category.getName() + "#" + tool.name())) {
+                    continue;
+                }
+
                 CardPanel cardPanel = new CardPanel(toolViewClass);
                 cardPanel.setPreferredSize(JBUI.size(260,100));
-                cardPanels.add(cardPanel);
                 cardPanel.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -161,21 +168,25 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
                         }
                     }
                 });
+                cardPanels.add(cardPanel);
             }
-            // 添加流水线信息
-            CollapsibleTitledSeparator titledSeparator = new CollapsibleTitledSeparator(category.getName());
-            titledSeparator.setLabelFor(toolCustomizerPanel);
-            titledSeparator.onAction(cardPanels::setVisible);
-            titledSeparator.setExpanded(true);
-            // 添加内容
-            verticalPanel.add(titledSeparator);
-            verticalPanel.add(cardPanels);
+            // 只有存在工具的分类才显示
+            if (cardPanels.getComponentCount() > 0) {
+                // 添加流水线信息
+                CollapsibleTitledSeparator titledSeparator = new CollapsibleTitledSeparator(category.getName());
+                titledSeparator.setLabelFor(toolCustomizerPanel);
+                titledSeparator.onAction(cardPanels::setVisible);
+                titledSeparator.setExpanded(true);
+                // 添加内容
+                verticalPanel.add(titledSeparator);
+                verticalPanel.add(cardPanels);
+            }
         }
         welcomeScrollPanel.setViewportView(verticalPanel);
         refreshToolCustomizerPanel(welcomeScrollPanel);
     }
 
-    private void initToolTreeData(Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
+    private void initToolTreeData() {
         DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) toolTree.getModel().getRoot();
         for (Map.Entry<ToolCategory, List<Class<? extends ToolView>>> entry : toolCategoryListMap.entrySet()) {
             ToolCategory category = entry.getKey();

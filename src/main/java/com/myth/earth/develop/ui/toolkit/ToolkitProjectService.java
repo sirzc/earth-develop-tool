@@ -100,4 +100,8 @@ public class ToolkitProjectService {
         }
         return results;
     }
+
+    public void refreshWelcomePanel() {
+        toolMainPopupPanel.initWelcomePanel();
+    }
 }
