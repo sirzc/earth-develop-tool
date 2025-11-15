@@ -16,6 +16,7 @@
 package com.myth.earth.develop.ui.toolkit;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.DumbAwareAction;
@@ -37,6 +38,7 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.WrapLayout;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import com.intellij.util.ui.tree.TreeUtil;
+import com.myth.earth.develop.common.CommonConst;
 import com.myth.earth.develop.ui.component.CardPanel;
 import com.myth.earth.develop.ui.component.CollapsibleTitledSeparator;
 import com.myth.earth.develop.ui.component.EarthSupportPanel;
@@ -83,6 +85,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     private final        Map<DefaultMutableTreeNode, Class<? extends ToolView>> toolNodeMapper;
     private final        JBScrollPane                                           welcomeScrollPanel;
     private final        EarthSupportPanel                                      earthSupportPanel;
+    private final        OnePixelSplitter                                       onePixelSplitter;
     private              boolean                                                pinWindow;
     private              JBPopup                                                showPopup;
     private              ToolView                                               toolView;
@@ -123,7 +126,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         toolTreeScroll.setBorder(BorderFactory.createEmptyBorder());
         toolTreeScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         // 左右可调整面板
-        OnePixelSplitter onePixelSplitter = new OnePixelSplitter(false, 0.3f, 0.25f, 0.35f);
+        onePixelSplitter = new OnePixelSplitter(false, 0.3f, 0.25f, 0.35f);
         onePixelSplitter.setFirstComponent(toolTreeScroll);
         onePixelSplitter.setSecondComponent(toolCustomizerPanel);
         // 添加内容
@@ -283,10 +286,12 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
 
         ActionManager actionManager = ActionManager.getInstance();
         AnAction toolKitConfigAction = actionManager.getAction("EarthDevelopTool.ToolKitConfig");
+        AnAction toolKitTreeToggleAction = actionManager.getAction("EarthDevelopTool.ToolKitTreeToggle");
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.addAction(new ToolkitHomeAction());
         actionGroup.addAction(new ManualRefreshAction());
         actionGroup.addAction(new ResizeViewAction());
+        actionGroup.addAction(toolKitTreeToggleAction);
         actionGroup.addAction(toolKitConfigAction);
         actionGroup.addAction(new LikeHomeAction());
         actionGroup.addAction(new FixedWindowAction());
@@ -337,7 +342,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
 
     @Override
     public Dimension getPreferredSize() {
-        return JBUI.size(800, 600);
+        return JBUI.size(820, 600);
     }
 
     @Override
@@ -368,6 +373,17 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         toolCustomizerPanel.removeAll();
         toolCustomizerPanel.add(component, BorderLayout.CENTER);
         toolCustomizerPanel.updateUI();
+    }
+
+    public void refreshToolKitTree(boolean refreshWelcomePanelSize) {
+        boolean treeHideEnable = PropertiesComponent.getInstance(project).getBoolean(CommonConst.TREE_HIDE_ENABLE);
+        SwingUtilities.invokeLater(() -> {
+            onePixelSplitter.getFirstComponent().setVisible(!treeHideEnable);
+            onePixelSplitter.updateUI();
+            if (refreshWelcomePanelSize && welcomeScrollPanel.isShowing()) {
+                initWelcomePanel();
+            }
+        });
     }
 
     private DumbAwareAction create(Consumer<AnActionEvent> action) {

@@ -86,5 +86,7 @@
 
         <action id="EarthDevelopTool.ToolKitConfig" class="com.myth.earth.develop.action.ToolKitConfigAction" icon="AllIcons.Actions.Properties"
                 text="工具箱设置" />
+
+        <action id="EarthDevelopTool.ToolKitTreeToggle" class="com.myth.earth.develop.action.ToolKitTreeToggleAction"/>
     </actions>
 </idea-plugin>

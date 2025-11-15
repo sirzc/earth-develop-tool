@@ -72,6 +72,7 @@ public class ToolkitProjectService {
                                                       .setLocateWithinScreenBounds(false)
                                                       .createPopup();
         toolMainPopupPanel.refreshPopupAndToolView(popup);
+        toolMainPopupPanel.refreshToolKitTree(false);
         // 注册为父子关系
         Disposer.register(popup, toolMainPopupPanel);
         // 设置popup当前显示最小大小
@@ -103,5 +104,9 @@ public class ToolkitProjectService {
 
     public void refreshWelcomePanel() {
         toolMainPopupPanel.initWelcomePanel();
+    }
+
+    public void refreshToolKitTree() {
+        toolMainPopupPanel.refreshToolKitTree(true);
     }
 }
