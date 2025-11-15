@@ -270,13 +270,16 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         res.setLayout(new BoxLayout(res, BoxLayout.X_AXIS));
         res.setOpaque(false);
 
+        ActionManager actionManager = ActionManager.getInstance();
+        AnAction toolKitConfigAction = actionManager.getAction("EarthDevelopTool.ToolKitConfig");
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.addAction(new ToolkitHomeAction());
         actionGroup.addAction(new ManualRefreshAction());
         actionGroup.addAction(new ResizeViewAction());
+        actionGroup.addAction(toolKitConfigAction);
         actionGroup.addAction(new LikeHomeAction());
         actionGroup.addAction(new FixedWindowAction());
-        ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_POPUP + ".toolkit.main.toolbar", actionGroup, true);
+        ActionToolbar toolbar = actionManager.createActionToolbar(ActionPlaces.EDITOR_POPUP + ".toolkit.main.toolbar", actionGroup, true);
         toolbar.setTargetComponent(this);
         toolbar.setLayoutPolicy(ActionToolbar.NOWRAP_LAYOUT_POLICY);
         toolbar.updateActionsImmediately();

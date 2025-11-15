@@ -64,6 +64,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup displayType="BALLOON" id="EarthDevelopTool.Notify"/>
         <projectService serviceImplementation="com.myth.earth.develop.ui.toolkit.ToolkitProjectService" />
+        <applicationService serviceImplementation="com.myth.earth.develop.ui.toolkit.ToolkitGlobalState"/>
 
         <statusBarWidgetFactory id="EarthDevelopTool.StatusBarWidget" order="first"
                                 implementation="com.myth.earth.develop.extensions.DevelopToolStatusBarWidgetFactory"/>
@@ -82,5 +83,8 @@
         <action id="EarthDevelopTool.QuickOpenToolkit" class="com.myth.earth.develop.action.QuickOpenToolKitAction" text="打开工具箱">
             <keyboard-shortcut keymap="$default" first-keystroke="alt F2"/>
         </action>
+
+        <action id="EarthDevelopTool.ToolKitConfig" class="com.myth.earth.develop.action.ToolKitConfigAction" icon="AllIcons.Actions.Properties"
+                text="工具箱设置" />
     </actions>
 </idea-plugin>
