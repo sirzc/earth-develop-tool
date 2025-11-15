@@ -85,14 +85,14 @@ public class ToolkitProjectService {
     public List<ToolKitInfo> assembleToolKitInfos() {
         List<ToolKitInfo> results = new ArrayList<>(16);
         ToolkitGlobalState toolkitGlobalState = ToolkitGlobalState.getInstance();
-        List<String> closeToolKits = toolkitGlobalState.getCloseToolKits();
+        List<String> hideToolKits = toolkitGlobalState.getHideToolKits();
         Map<ToolCategory, List<Class<? extends ToolView>>> tools = toolkitLoader.getAllCategorizedTools();
         for (Map.Entry<ToolCategory, List<Class<? extends ToolView>>> entry : tools.entrySet()) {
             ToolCategory toolCategory = entry.getKey();
             for (Class<? extends ToolView> toolView : entry.getValue()) {
                 Tool tool = toolView.getAnnotation(Tool.class);
                 ToolKitInfo toolKitInfo = new ToolKitInfo();
-                toolKitInfo.setEnable(!closeToolKits.contains(toolCategory.getName() + "#" + tool.name()));
+                toolKitInfo.setEnable(!hideToolKits.contains(toolCategory.getName() + "#" + tool.name()));
                 toolKitInfo.setCategory(toolCategory.getName());
                 toolKitInfo.setName(tool.name());
                 results.add(toolKitInfo);

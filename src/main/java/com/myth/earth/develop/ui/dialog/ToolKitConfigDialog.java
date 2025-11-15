@@ -84,10 +84,10 @@ public class ToolKitConfigDialog extends JDialog {
 
     private void onOK() {
         // 过滤出关闭的并存储
-        List<String> closeToolKits = listTableModel.getItems().stream()
-                                                   .filter(t -> !t.getEnable()).map(t -> t.getCategory() + "#" + t.getName())
-                                                   .collect(Collectors.toList());
-        ToolkitGlobalState.getInstance().setCloseToolKits(closeToolKits);
+        List<String> hideToolKits = listTableModel.getItems().stream()
+                                                  .filter(t -> !t.getEnable()).map(t -> t.getCategory() + "#" + t.getName())
+                                                  .collect(Collectors.toList());
+        ToolkitGlobalState.getInstance().setHideToolKits(hideToolKits);
         // 刷新主页信息
 
         // 在此处添加您的代码

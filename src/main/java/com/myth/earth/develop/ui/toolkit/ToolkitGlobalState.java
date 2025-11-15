@@ -35,7 +35,7 @@ import java.util.List;
 @State(name = "com.myth.earth.develop.ui.toolkit.ToolkitGlobalState", storages = {@Storage("EarthToolkitGlobalState.xml")})
 public class ToolkitGlobalState implements PersistentStateComponent<ToolkitGlobalState> {
 
-    private List<String> closeToolKits;
+    private List<String> hideToolKits;
 
     public static ToolkitGlobalState getInstance() {
         return ApplicationManager.getApplication().getService(ToolkitGlobalState.class);
@@ -53,14 +53,14 @@ public class ToolkitGlobalState implements PersistentStateComponent<ToolkitGloba
         XmlSerializerUtil.copyBean(toolkitGlobalState, this);
     }
 
-    public List<String> getCloseToolKits() {
-        if (closeToolKits == null) {
-            closeToolKits = new ArrayList<>();
+    public List<String> getHideToolKits() {
+        if (hideToolKits == null) {
+            hideToolKits = new ArrayList<>();
         }
-        return closeToolKits;
+        return hideToolKits;
     }
 
-    public void setCloseToolKits(List<String> closeToolKits) {
-        this.closeToolKits = closeToolKits;
+    public void setHideToolKits(List<String> hideToolKits) {
+        this.hideToolKits = hideToolKits;
     }
 }
