@@ -56,6 +56,7 @@ public class EarthSupportPanel extends JBPanel<EarthSupportPanel> {
         rootPanel.add(createActionLink("Earth Restful Helper：API调试、文档生成、接口管理", "https://plugins.jetbrains.com/plugin/25517-earth-restful-helper/?noRedirect=true"));
         rootPanel.add(createActionLink("Earth Web Tool：IDE中浏览收藏页面", "https://plugins.jetbrains.com/plugin/27996-earth-web-tool/?noRedirect=true"));
         rootPanel.add(createActionLink("Earth Develop Tool：开发工具箱，收录一些常用开发工具", "https://plugins.jetbrains.com/plugin/28500-earth-develop-tool/?noRedirect=true"));
+        rootPanel.add(createActionLink("Earth Ide Enhancer：IDE增强，对原生功能的扩展", "https://plugins.jetbrains.com/plugin/28782-earth-ide-enhancer?noRedirect=true"));
         rootPanel.add(Box.createVerticalStrut(10));
         rootPanel.add(new JBLabel("您可以采取以下任意一种方式来支持Earth系列插件："));
         rootPanel.add(Box.createVerticalStrut(5));
