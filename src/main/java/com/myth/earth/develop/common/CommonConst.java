@@ -19,6 +19,4 @@ public interface CommonConst {
     String PLUGIN_NOTICE_GROUP_ID = PLUGIN_ID_PREFIX + "Notice";
 
     JBColor BACKGROUND_COLOR = new JBColor(0xFFFFFF, 0x45494A);
-
-    String TREE_HIDE_ENABLE = "TREE_HIDE_ENABLE";
 }

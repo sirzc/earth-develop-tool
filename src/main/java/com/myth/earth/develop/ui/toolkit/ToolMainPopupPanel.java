@@ -16,7 +16,6 @@
 package com.myth.earth.develop.ui.toolkit;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.DumbAwareAction;
@@ -38,7 +37,6 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.WrapLayout;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import com.intellij.util.ui.tree.TreeUtil;
-import com.myth.earth.develop.common.CommonConst;
 import com.myth.earth.develop.ui.component.CardPanel;
 import com.myth.earth.develop.ui.component.CollapsibleTitledSeparator;
 import com.myth.earth.develop.ui.component.EarthSupportPanel;
@@ -376,9 +374,9 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     }
 
     public void refreshToolKitTree(boolean refreshWelcomePanelSize) {
-        boolean treeHideEnable = PropertiesComponent.getInstance(project).getBoolean(CommonConst.TREE_HIDE_ENABLE);
+        boolean hideToolTree = ToolkitGlobalState.getInstance().getHideToolTree();
         SwingUtilities.invokeLater(() -> {
-            onePixelSplitter.getFirstComponent().setVisible(!treeHideEnable);
+            onePixelSplitter.getFirstComponent().setVisible(!hideToolTree);
             onePixelSplitter.updateUI();
             if (refreshWelcomePanelSize && welcomeScrollPanel.isShowing()) {
                 initWelcomePanel();

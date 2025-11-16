@@ -16,15 +16,13 @@
 package com.myth.earth.develop.action;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
-import com.myth.earth.develop.common.CommonConst;
+import com.myth.earth.develop.ui.toolkit.ToolkitGlobalState;
 import com.myth.earth.develop.ui.toolkit.ToolkitProjectService;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * 工具树菜单显示或隐藏
@@ -40,15 +38,15 @@ public class ToolKitTreeToggleAction extends AnAction {
         if (project == null) {
             return;
         }
-        boolean treeHideEnable = !hideTreeTool(project);
-        PropertiesComponent.getInstance(project).setValue(CommonConst.TREE_HIDE_ENABLE, treeHideEnable);
+        boolean hideToolTree = !hideToolTree();
+        ToolkitGlobalState.getInstance().setHideToolTree(hideToolTree);
         ToolkitProjectService.getInstance(project).refreshToolKitTree();
     }
 
     @Override
     public void update(@NotNull AnActionEvent e) {
         Presentation presentation = e.getPresentation();
-        if (hideTreeTool(e.getProject())) {
+        if (hideToolTree()) {
             presentation.setIcon(AllIcons.General.TreeHovered);
             presentation.setText("显示工具树");
         } else {
@@ -57,10 +55,7 @@ public class ToolKitTreeToggleAction extends AnAction {
         }
     }
 
-    private boolean hideTreeTool(@Nullable Project project) {
-        if (project == null) {
-            return false;
-        }
-        return PropertiesComponent.getInstance(project).getBoolean(CommonConst.TREE_HIDE_ENABLE);
+    private boolean hideToolTree() {
+        return ToolkitGlobalState.getInstance().getHideToolTree();
     }
 }

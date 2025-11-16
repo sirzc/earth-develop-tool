@@ -35,13 +35,18 @@ import java.util.List;
 @State(name = "com.myth.earth.develop.ui.toolkit.ToolkitGlobalState", storages = {@Storage("EarthToolkitGlobalState.xml")})
 public class ToolkitGlobalState implements PersistentStateComponent<ToolkitGlobalState> {
 
+    /**
+     * 隐藏工具树
+     */
+    private boolean      hideToolTree = false;
+    /**
+     * 隐藏工具car
+     */
     private List<String> hideToolKits;
 
     public static ToolkitGlobalState getInstance() {
         return ApplicationManager.getApplication().getService(ToolkitGlobalState.class);
     }
-
-
 
     @Override
     public @Nullable ToolkitGlobalState getState() {
@@ -62,5 +67,13 @@ public class ToolkitGlobalState implements PersistentStateComponent<ToolkitGloba
 
     public void setHideToolKits(List<String> hideToolKits) {
         this.hideToolKits = hideToolKits;
+    }
+
+    public boolean getHideToolTree() {
+        return hideToolTree;
+    }
+
+    public void setHideToolTree(boolean hideToolTree) {
+        this.hideToolTree = hideToolTree;
     }
 }
