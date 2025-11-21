@@ -20,10 +20,15 @@ import cn.hutool.core.date.DateUtil;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.ui.IdeBorderFactory;
+import com.intellij.ui.JBIntSpinner;
+import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBTextArea;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.components.fields.ExtendableTextComponent;
 import com.intellij.ui.components.fields.ExtendableTextField;
+import com.intellij.util.Consumer;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.kit.ClipboardKit;
@@ -51,7 +56,11 @@ import java.util.Set;
 public class TimestampToolViewImpl extends AbstractToolView {
 
     private final ExtendableTextField extendableTextField;
-    private       ComboBox<String>    timeUnitBox2;
+    private final JBTextArea numTextArea;
+    private final JBTextArea strTextArea;
+    private int              begin = -3;
+    private int              end   = 1;
+    private ComboBox<String> timeUnitBox2;
     private       ComboBox<String>    timeZoneBox2;
     private       JBTextField         fromDateTimeField;
     private       JBTextField         toTimestampField;
@@ -75,16 +84,108 @@ public class TimestampToolViewImpl extends AbstractToolView {
         JPanel toDatePanel = createToDatePanel(currentDate, currentTimeMillis);
         JPanel toTimestampPanel = createTimestampPanel(currentDate, currentTimeMillis);
 
+        numTextArea = createTextArea();
+        numTextArea.setEditable(true);
+        numTextArea.setLineWrap(false);
+
+        strTextArea = createTextArea();
+        strTextArea.setEditable(true);
+        strTextArea.setLineWrap(false);
+        
+        JPanel showDatePanel = new JPanel(new GridLayout(1, 2, 5, 5));
+        showDatePanel.setBorder(JBUI.Borders.emptyTop(5));
+        showDatePanel.add(createScrollPane(numTextArea));
+        showDatePanel.add(createScrollPane(strTextArea));
+        // onePixelSplitter.add(rightScrollPane, BorderLayout.EAST);
+
+        JPanel beginPanel = createSliderPanel("开始时间", -30, 30, begin, i -> {
+            begin = i;
+            updateTimeAndDatePanel();
+        });
+
+        JPanel endPanel = createSliderPanel("结束时间", -30, 30, end, i -> {
+            end = i;
+            updateTimeAndDatePanel();
+        });
+        updateTimeAndDatePanel();
+
         @SuppressWarnings("all") JPanel centerPanel = FormBuilder.createFormBuilder()
+                                                                 .setVerticalGap(5)
                                                                  .addComponent(new JBLabel("当前时间戳"))
                                                                  .addComponent(extendableTextField)
-                                                                 .addComponent(new JBLabel("时间戳转日期时间"), 20)
+                                                                 .addComponent(new JBLabel("时间戳转日期时间"))
                                                                  .addComponent(toDatePanel)
-                                                                 .addComponent(new JBLabel("日期时间转时间戳"), 20)
+                                                                 .addComponent(new JBLabel("日期时间转时间戳"))
                                                                  .addComponent(toTimestampPanel)
+                                                                 .addSeparator()
+                                                                 .addComponent(beginPanel)
+                                                                 .addComponent(endPanel)
                                                                  .getPanel();
-
         add(centerPanel, BorderLayout.NORTH);
+        add(showDatePanel, BorderLayout.CENTER);
+    }
+
+    private void updateTimeAndDatePanel() {
+        Date date = new Date();
+        Date beginDate = DateUtil.offsetDay(date, begin);
+        Date endDate = DateUtil.offsetDay(date, end);
+        
+        // 格式化开始和结束时间
+        String beginTimeStamp = String.valueOf(beginDate.getTime());
+        String endTimeStamp = String.valueOf(endDate.getTime());
+        String beginDateStr = DateUtil.format(beginDate, DatePattern.NORM_DATETIME_PATTERN);
+        String endDateStr = DateUtil.format(endDate, DatePattern.NORM_DATETIME_PATTERN);
+        
+        // 写入时间戳格式到numTextArea
+        StringBuilder numText = new StringBuilder();
+        numText.append("\"startTime\":").append(beginTimeStamp).append("\n");
+        numText.append("\"endTime\":").append(endTimeStamp).append("\n\n");
+        numText.append("\"beginDate\":").append(beginTimeStamp).append("\n");
+        numText.append("\"endDate\":").append(endTimeStamp).append("\n\n");
+        numText.append("\"beginTime\":").append(beginTimeStamp).append("\n");
+        numText.append("\"finishTime\":").append(endTimeStamp).append("\n");
+        numTextArea.setText(numText.toString());
+
+        // 写入日期格式到strTextArea
+        StringBuilder strText = new StringBuilder();
+        strText.append("\"startTime\":\"").append(beginDateStr).append("\"\n");
+        strText.append("\"endTime\":\"").append(endDateStr).append("\"\n\n");
+        strText.append("\"beginDate\":\"").append(beginDateStr).append("\"\n");
+        strText.append("\"endDate\":\"").append(endDateStr).append("\"\n\n");
+        strText.append("\"beginTime\":\"").append(beginDateStr).append("\"\n");
+        strText.append("\"finishTime\":\"").append(endDateStr).append("\"\n");
+        strTextArea.setText(strText.toString());
+    }
+
+    private JPanel createSliderPanel(String tip, int min, int max, int num, Consumer<Integer> customer) {
+        JBLabel tipLabel = new JBLabel(tip);
+        tipLabel.setBorder(JBUI.Borders.empty(0, 10));
+        tipLabel.setPreferredSize(JBUI.size(75, 35));
+
+        JSlider slider = new JSlider(min, max, num);
+        slider.setBorder(new CustomLineBorder(JBUI.insets(0, 1)));
+
+        JBIntSpinner intSpinner = new JBIntSpinner(num, min, max);
+        intSpinner.setBorder(JBUI.Borders.empty());
+
+        slider.addChangeListener(e -> {
+            int value = slider.getValue();
+            intSpinner.setValue(value);
+            customer.consume(value);
+        });
+
+        intSpinner.addChangeListener(e -> {
+            int value = intSpinner.getNumber();
+            slider.setValue(value);
+            customer.consume(value);
+        });
+
+        JPanel sliderPanel = new JPanel(new BorderLayout());
+        sliderPanel.setBorder(IdeBorderFactory.createBorder());
+        sliderPanel.add(tipLabel, BorderLayout.WEST);
+        sliderPanel.add(slider, BorderLayout.CENTER);
+        sliderPanel.add(intSpinner, BorderLayout.EAST);
+        return sliderPanel;
     }
 
     private @NotNull JPanel createTimestampPanel(String currentDate, String currentTimeMillis) {
@@ -177,7 +278,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
     private @NotNull ComboBox<String> createTimeZoneBox() {
         // 获取所有可用时区ID
         ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.setPreferredSize(JBUI.size(130,35));
+        comboBox.setPreferredSize(JBUI.size(130, 35));
         // 将常用的时区优先放在最上（如：Asia/Shanghai、GMT、UTC等），其他安装字母排序
         Set<String> availableZones = ZoneId.getAvailableZoneIds();
         // 定义常用时区列表，优先显示
@@ -189,17 +290,14 @@ public class TimestampToolViewImpl extends AbstractToolView {
             }
         }
         // 添加剩余时区并按字母排序
-        availableZones.stream()
-                .filter(zone -> !Arrays.asList(commonZones).contains(zone))
-                .sorted()
-                .forEach(comboBox::addItem);
+        availableZones.stream().filter(zone -> !Arrays.asList(commonZones).contains(zone)).sorted().forEach(comboBox::addItem);
         comboBox.setSelectedItem(ZoneId.systemDefault().getId());
         return comboBox;
     }
 
     private static @NotNull ComboBox<String> createTimeUnitBox() {
         ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.setPreferredSize(JBUI.size(65,35));
+        comboBox.setPreferredSize(JBUI.size(65, 35));
         comboBox.addItem("ms");
         comboBox.addItem("s");
         return comboBox;
@@ -221,5 +319,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
         timeZoneBox2.setSelectedItem("Asia/Shanghai");
         fromDateTimeField.setText(dateFormat);
         toTimestampField.setText(time);
+        // 更新面板中的时间信息
+        updateTimeAndDatePanel();
     }
 }
