@@ -56,11 +56,12 @@ import java.util.Set;
 public class TimestampToolViewImpl extends AbstractToolView {
 
     private final ExtendableTextField extendableTextField;
-    private final JBTextArea numTextArea;
-    private final JBTextArea strTextArea;
-    private int              begin = -3;
-    private int              end   = 1;
-    private ComboBox<String> timeUnitBox2;
+    private final JBTextArea          numTextArea;
+    private final JBTextArea          strTextArea;
+    private       Date                date;
+    private       int                 begin = -3;
+    private       int                 end   = 1;
+    private       ComboBox<String>    timeUnitBox2;
     private       ComboBox<String>    timeZoneBox2;
     private       JBTextField         fromDateTimeField;
     private       JBTextField         toTimestampField;
@@ -71,9 +72,9 @@ public class TimestampToolViewImpl extends AbstractToolView {
 
     public TimestampToolViewImpl(@NotNull Project project) {
         super(project);
-        Date date = new Date();
-        String currentDate = DateUtil.format(date, DatePattern.NORM_DATETIME_PATTERN);
-        String currentTimeMillis = String.valueOf(date.getTime());
+        date = new Date();
+        String currentDate = DateUtil.format(this.date, DatePattern.NORM_DATETIME_PATTERN);
+        String currentTimeMillis = String.valueOf(this.date.getTime());
         // 带图标的按钮
         extendableTextField = new ExtendableTextField();
         extendableTextField.setPreferredSize(JBUI.size(120, 35));
@@ -91,7 +92,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
         strTextArea = createTextArea();
         strTextArea.setEditable(true);
         strTextArea.setLineWrap(false);
-        
+
         JPanel showDatePanel = new JPanel(new GridLayout(1, 2, 5, 5));
         showDatePanel.setBorder(JBUI.Borders.emptyTop(5));
         showDatePanel.add(createScrollPane(numTextArea));
@@ -100,14 +101,14 @@ public class TimestampToolViewImpl extends AbstractToolView {
 
         JPanel beginPanel = createSliderPanel("开始时间", -30, 30, begin, i -> {
             begin = i;
-            updateTimeAndDatePanel();
+            updateTimeAndDatePanel(date);
         });
 
         JPanel endPanel = createSliderPanel("结束时间", -30, 30, end, i -> {
             end = i;
-            updateTimeAndDatePanel();
+            updateTimeAndDatePanel(date);
         });
-        updateTimeAndDatePanel();
+        updateTimeAndDatePanel(date);
 
         @SuppressWarnings("all") JPanel centerPanel = FormBuilder.createFormBuilder()
                                                                  .setVerticalGap(5)
@@ -125,17 +126,16 @@ public class TimestampToolViewImpl extends AbstractToolView {
         add(showDatePanel, BorderLayout.CENTER);
     }
 
-    private void updateTimeAndDatePanel() {
-        Date date = new Date();
+    private void updateTimeAndDatePanel(@NotNull Date date) {
         Date beginDate = DateUtil.offsetDay(date, begin);
         Date endDate = DateUtil.offsetDay(date, end);
-        
+
         // 格式化开始和结束时间
         String beginTimeStamp = String.valueOf(beginDate.getTime());
         String endTimeStamp = String.valueOf(endDate.getTime());
         String beginDateStr = DateUtil.format(beginDate, DatePattern.NORM_DATETIME_PATTERN);
         String endDateStr = DateUtil.format(endDate, DatePattern.NORM_DATETIME_PATTERN);
-        
+
         // 写入时间戳格式到numTextArea
         StringBuilder numText = new StringBuilder();
         numText.append("\"startTime\":").append(beginTimeStamp).append("\n");
@@ -305,7 +305,7 @@ public class TimestampToolViewImpl extends AbstractToolView {
 
     @Override
     public void manualRefresh() {
-        Date date = new Date();
+        date = new Date();
         String dateFormat = DateUtil.format(date, DatePattern.NORM_DATETIME_PATTERN);
         String time = String.valueOf(date.getTime());
         extendableTextField.setText(time);
@@ -320,6 +320,6 @@ public class TimestampToolViewImpl extends AbstractToolView {
         fromDateTimeField.setText(dateFormat);
         toTimestampField.setText(time);
         // 更新面板中的时间信息
-        updateTimeAndDatePanel();
+        updateTimeAndDatePanel(date);
     }
 }
