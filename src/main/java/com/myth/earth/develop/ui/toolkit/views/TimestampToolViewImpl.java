@@ -34,6 +34,7 @@ import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.kit.ClipboardKit;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
+import com.myth.earth.develop.ui.toolkit.core.ToolLevel;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -52,7 +53,7 @@ import java.util.Set;
  * @author zhouchao
  * @date 2025-09-07 下午10:23
  */
-@Tool(category = ToolCategory.DEVELOP, name = "时间戳转换", description = "获取时间戳、时间戳转日期时间、日期时间转时间戳")
+@Tool(category = ToolCategory.DEVELOP, level = ToolLevel.HIGH , name = "时间戳转换", description = "获取时间戳、时间戳转日期时间、日期时间转时间戳")
 public class TimestampToolViewImpl extends AbstractToolView {
 
     private final ExtendableTextField extendableTextField;

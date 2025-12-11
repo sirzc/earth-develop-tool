@@ -15,28 +15,33 @@
 
 package com.myth.earth.develop.ui.toolkit.core;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * tool 工具注解
+ * 工具优先级
  *
  * @author zhouchao
- * @date 2025/9/8 下午4:50
- **/
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface Tool {
-
-    ToolCategory category();
-
-    String name();
-
-    ToolLevel level() default ToolLevel.LOW;
-
-    String description();
-
-    String iconPath() default "";
+ * @date 2025-12-11 下午7:48
+ */
+public enum ToolLevel {
+    /**
+     * 高优先级
+     */
+    HIGH(3),
+    /**
+     * 中优先级
+     */
+    MEDIUM(2),
+    /**
+     * 低优先级
+     */
+    LOW(1);
+    
+    private final int level;
+    
+    ToolLevel(int level) {
+        this.level = level;
+    }
+    
+    public int getLevel() {
+        return level;
+    }
 }

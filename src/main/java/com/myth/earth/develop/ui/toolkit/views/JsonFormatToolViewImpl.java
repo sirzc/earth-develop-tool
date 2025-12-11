@@ -23,6 +23,7 @@ import com.myth.earth.develop.kit.ClipboardKit;
 import com.myth.earth.develop.ui.component.MyEditorTextField;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
+import com.myth.earth.develop.ui.toolkit.core.ToolLevel;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,7 +36,7 @@ import java.awt.*;
  * @author zhouchao
  * @date 2025-09-13 下午4:32
  */
-@Tool(category = ToolCategory.DEVELOP, name = "JSON格式化", description = "JSON字符串格式化、压缩、转义、去转义")
+@Tool(category = ToolCategory.DEVELOP, level = ToolLevel.MEDIUM, name = "JSON格式化", description = "JSON字符串格式化、压缩、转义、去转义")
 public class JsonFormatToolViewImpl extends AbstractToolView {
 
     public static final String SHOW_TIP = "<html><body><b style='color:orange;'>「所有操作与编辑器中快捷键一致，如Win版中：Ctrl + F 搜索、Ctrl + Alt + L 格式化」</b></body></html>";

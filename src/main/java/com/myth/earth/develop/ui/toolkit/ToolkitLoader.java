@@ -237,6 +237,13 @@ public class ToolkitLoader {
      * 获取分类后的工具映射（供外部进一步处理）
      */
     public Map<ToolCategory, List<Class<? extends ToolView>>> getAllCategorizedTools() {
-        return categorizedTools;
+        Map<ToolCategory, List<Class<? extends ToolView>>> sortedTools = new EnumMap<>(ToolCategory.class);
+        for (Map.Entry<ToolCategory, List<Class<? extends ToolView>>> entry : categorizedTools.entrySet()) {
+            ToolCategory category = entry.getKey();
+            List<Class<? extends ToolView>> tools = new ArrayList<>(entry.getValue());
+            tools.sort(Comparator.comparingInt((Class<? extends ToolView> clazz) -> clazz.getAnnotation(Tool.class).level().getLevel()).reversed());
+            sortedTools.put(category, tools);
+        }
+        return sortedTools;
     }
 }
