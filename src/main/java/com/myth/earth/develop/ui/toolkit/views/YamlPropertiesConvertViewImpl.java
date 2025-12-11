@@ -42,14 +42,14 @@ import java.nio.charset.StandardCharsets;
  * @author zhouchao
  * @date 2025/12/6 下午3:52
  **/
-@Tool(category = ToolCategory.DEVELOP, name = "Properties与Yaml互转", description = "properties转yaml、yaml转properties")
-public class PropertiesAndYamlConvertViewImpl extends AbstractToolView {
+@Tool(category = ToolCategory.DEVELOP, name = "Properties<=>Yaml", description = "properties转yaml、yaml转properties")
+public class YamlPropertiesConvertViewImpl extends AbstractToolView {
 
     private final JBTextArea                inputTextArea;
     private final JBTextArea                outputTextArea;
     private final TextFieldWithBrowseButton inputTextField;
 
-    public PropertiesAndYamlConvertViewImpl(@NotNull Project project) {
+    public YamlPropertiesConvertViewImpl(@NotNull Project project) {
         super(project);
 
         inputTextField = buildFileSelectFieldButton(project);

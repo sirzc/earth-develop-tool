@@ -42,14 +42,14 @@ import java.nio.charset.StandardCharsets;
  * @author zhouchao
  * @date 2025/12/4 下午9:54
  **/
-@Tool(category = ToolCategory.DEVELOP, name = "JSON与Yaml互转", description = "json转yaml、yaml转json")
-public class JsonAndYamlConvertViewImpl extends AbstractToolView {
+@Tool(category = ToolCategory.DEVELOP, name = "JSON<=>Yaml", description = "json转yaml、yaml转json")
+public class YamlJsonConvertViewImpl extends AbstractToolView {
 
     private final JBTextArea                inputTextArea;
     private final JBTextArea                outputTextArea;
     private final TextFieldWithBrowseButton inputTextField;
 
-    public JsonAndYamlConvertViewImpl(@NotNull Project project) {
+    public YamlJsonConvertViewImpl(@NotNull Project project) {
         super(project);
 
         inputTextField = buildFileSelectFieldButton(project);
