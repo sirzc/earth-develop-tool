@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.myth.earth'
-version '1.6'
+version '1.7'
 
 repositories {
     mavenCentral()
@@ -35,9 +35,9 @@ patchPluginXml {
     changeNotes = """
       <h3>版本更新: ${project.version}</h3>
       <ul>
-        <li>新增：界面显示时刷新时间戳等信息</li>
-        <li>新增：主界面设置可自定义工具</li>
-        <li>新增：工具树显示开关</li>
+        <li>新增：快速获取时间日期入参</li>
+        <li>新增：json与yaml互相转换</li>
+        <li>新增：properties与yaml互相转换</li>
       </ul>
     """
 }
