@@ -10,6 +10,7 @@ import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import com.myth.earth.develop.utils.PaddingHelper;
+import com.myth.earth.develop.utils.ResultFormatterHelper;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -114,7 +115,16 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
                             }
                         }
 
-                        result.append(value.toString(toRadix));
+                        String convertedValue = value.toString(toRadix);
+
+                        // 对于正整数转换，需要按数据类型进行补零
+                        if (value.signum() > 0) {
+                            convertedValue = padConvertedValue(convertedValue, toRadix, dataType);
+                        }
+
+                        // 应用格式化显示
+                        String formattedValue = ResultFormatterHelper.formatResult(convertedValue, toRadix);
+                        result.append(formattedValue);
                     } catch (NumberFormatException e) {
                         result.append("无效数值");
                     }
@@ -128,6 +138,28 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
         }
 
         outputTextArea.setText(result.toString());
+    }
+
+    /**
+     * 根据数据类型对转换后的值进行补零
+     */
+    private String padConvertedValue(String value, int toRadix, PaddingHelper.DataType dataType) {
+        int bitWidth = dataType.bitWidth;
+
+        if (toRadix == 16) {
+            // 十六进制：每 4 bit = 1 个十六进制字符
+            int hexWidth = bitWidth / 4;
+            return String.format("%0" + hexWidth + "s", value).replace(' ', '0');
+        } else if (toRadix == 8) {
+            // 八进制：三个八进制字符约等于 8-9 bit，按 bitWidth 转换为八进制位数
+            int octalWidth = (int) Math.ceil(bitWidth / 3.0);
+            return String.format("%0" + octalWidth + "s", value).replace(' ', '0');
+        } else if (toRadix == 10) {
+            // 十进制：保持原样，不按 bit 补零
+            return value;
+        }
+
+        return value;
     }
 
     private String extractCoreValue(String line, int radix) {
