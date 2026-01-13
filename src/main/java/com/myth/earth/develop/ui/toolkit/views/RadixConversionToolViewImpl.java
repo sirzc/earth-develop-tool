@@ -9,6 +9,7 @@ import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
+import com.myth.earth.develop.utils.PaddingHelper;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -28,6 +29,7 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
     private final JBTextArea       outputTextArea;
     private final ComboBox<String> fromRadixBox;
     private final ComboBox<String> toRadixBox;
+    private final ComboBox<String> dataTypeBox;
 
     public RadixConversionToolViewImpl(@NotNull Project project) {
         super(project);
@@ -42,6 +44,9 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
         fromRadixBox = createRadixBox();
         toRadixBox = createRadixBox();
 
+        // 创建数据类型选择框
+        dataTypeBox = createDataTypeBox();
+
         // 默认选择10进制到16进制
         fromRadixBox.setSelectedItem("10");
         toRadixBox.setSelectedItem("16");
@@ -55,6 +60,8 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
         topPanel.add(fromRadixBox);
         topPanel.add(new JBLabel("到:"));
         topPanel.add(toRadixBox);
+        topPanel.add(new JBLabel("数据类型:"));
+        topPanel.add(dataTypeBox);
         topPanel.add(convertButton);
 
         JPanel centerPanel = FormBuilder.createFormBuilder()
@@ -78,21 +85,35 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
 
         int fromRadix = Integer.parseInt((String) fromRadixBox.getSelectedItem());
         int toRadix = Integer.parseInt((String) toRadixBox.getSelectedItem());
+        String selectedDataType = (String) dataTypeBox.getSelectedItem();
+        PaddingHelper.DataType dataType = PaddingHelper.DataType.valueOf(selectedDataType.toUpperCase());
 
         StringBuilder result = new StringBuilder();
         String[] lines = input.split("\n");
 
         for (int i = 0; i < lines.length; i++) {
-            String line = lines[i]; // 保留原始行内容
+            String line = lines[i];
             if (!line.isEmpty()) {
-                // 提取核心数值部分，去除前后特殊字符
                 String coreValue = extractCoreValue(line.trim(), fromRadix);
                 if (!coreValue.isEmpty()) {
                     try {
-                        // 处理可能的进制前缀
                         String normalizedValue = normalizeValue(coreValue, fromRadix);
-                        // 使用BigInteger支持大数转换
                         BigInteger value = new BigInteger(normalizedValue, fromRadix);
+
+                        // 如果来源进制是二进制，应用补零
+                        if (fromRadix == 2) {
+                            try {
+                                String paddedBinary = PaddingHelper.padBinary(normalizedValue, dataType);
+                                value = new BigInteger(paddedBinary, 2);
+                            } catch (IllegalArgumentException e) {
+                                result.append("错误: " + e.getMessage());
+                                if (i < lines.length - 1) {
+                                    result.append("\n");
+                                }
+                                continue;
+                            }
+                        }
+
                         result.append(value.toString(toRadix));
                     } catch (NumberFormatException e) {
                         result.append("无效数值");
@@ -185,6 +206,16 @@ public class RadixConversionToolViewImpl extends AbstractToolView {
         comboBox.addItem("8");
         comboBox.addItem("10");
         comboBox.addItem("16");
+        return comboBox;
+    }
+
+    private static @NotNull ComboBox<String> createDataTypeBox() {
+        ComboBox<String> comboBox = new ComboBox<>();
+        comboBox.setPreferredSize(JBUI.size(80, 35));
+        comboBox.addItem("byte");
+        comboBox.addItem("int");
+        comboBox.addItem("long");
+        comboBox.setSelectedItem("byte"); // 默认选择 byte
         return comboBox;
     }
 
