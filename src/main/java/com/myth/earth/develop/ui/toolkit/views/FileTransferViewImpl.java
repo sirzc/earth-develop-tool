@@ -35,6 +35,7 @@ import com.intellij.util.ui.ImageUtil;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.kit.ClipboardKit;
 import com.myth.earth.develop.transfer.FileServer;
+import com.myth.earth.develop.ui.intellij.MyDarculaComboBoxUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import org.jetbrains.annotations.NotNull;
@@ -70,8 +71,8 @@ public class FileTransferViewImpl extends AbstractToolView {
         super(project);
         // 网卡切换
         ipComboBox = new ComboBox<>();
+        ipComboBox.setUI(new MyDarculaComboBoxUI());
         ipComboBox.setBorder(BorderFactory.createEmptyBorder());
-        ipComboBox.setBackground(COMBOBOX_COLOR);
         ipComboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 String selectedIp = (String) ipComboBox.getSelectedItem();
@@ -111,7 +112,7 @@ public class FileTransferViewImpl extends AbstractToolView {
         });
 
         JPanel ipComboBoxPanel = new JPanel(new BorderLayout());
-        ipComboBoxPanel.setBackground(COMBOBOX_COLOR);
+        // ipComboBoxPanel.setBackground(COMBOBOX_COLOR);
         ipComboBoxPanel.add(ipComboBox, BorderLayout.CENTER);
 
         String tagName = "<html><body>扫码下载 <b style='color:orange;'>「刷新、重新选择文件、切换网卡均会终止当前传输」</b></body></html>";

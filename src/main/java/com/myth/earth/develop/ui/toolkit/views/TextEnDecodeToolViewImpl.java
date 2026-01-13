@@ -27,6 +27,7 @@ import com.intellij.ui.components.JBTextArea;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
+import com.myth.earth.develop.ui.intellij.MyDarculaComboBoxUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import org.jdesktop.swingx.HorizontalLayout;
@@ -76,8 +77,9 @@ public class TextEnDecodeToolViewImpl extends AbstractToolView {
         signPanel.setVisible(false);
 
         optionBox = new ComboBox<>();
+        optionBox.setUI(new MyDarculaComboBoxUI());
         optionBox.setBorder(BorderFactory.createEmptyBorder());
-        optionBox.setBackground(COMBOBOX_COLOR);
+        // optionBox.setBackground(COMBOBOX_COLOR);
         ENCODE_OPTIONS.forEach(optionBox::addItem);
 
         optionBox.addActionListener(e -> {
@@ -112,7 +114,7 @@ public class TextEnDecodeToolViewImpl extends AbstractToolView {
         buttonGroup.add(decodeRadio);
 
         JPanel optionBoxPanel = new JPanel(new BorderLayout());
-        optionBoxPanel.setBackground(COMBOBOX_COLOR);
+        // optionBoxPanel.setBackground(COMBOBOX_COLOR);
         optionBoxPanel.add(optionBox, BorderLayout.CENTER);
 
         JPanel topPanel = new JPanel(new HorizontalLayout());

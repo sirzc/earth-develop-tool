@@ -21,6 +21,7 @@ import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.kit.ClipboardKit;
+import com.myth.earth.develop.ui.intellij.MyDarculaComboBoxUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import org.apache.commons.text.StringEscapeUtils;
@@ -57,13 +58,14 @@ public class StringEscapeViewImpl extends AbstractToolView {
         outputTextArea = createTextArea();
 
         optionBox = new ComboBox<>();
+        optionBox.setUI(new MyDarculaComboBoxUI());
         optionBox.setBorder(BorderFactory.createEmptyBorder());
-        optionBox.setBackground(COMBOBOX_COLOR);
+        // optionBox.setBackground(COMBOBOX_COLOR);
 
         ESCAPE_OPTIONS.forEach(optionBox::addItem);
 
         JPanel optionBoxPanel = new JPanel(new BorderLayout());
-        optionBoxPanel.setBackground(COMBOBOX_COLOR);
+        // optionBoxPanel.setBackground(COMBOBOX_COLOR);
         optionBoxPanel.add(optionBox, BorderLayout.CENTER);
 
         JPanel topPanel = new JPanel(new HorizontalLayout());

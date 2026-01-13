@@ -31,6 +31,7 @@ import com.intellij.ui.components.fields.ExpandableTextField;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.ImageUtil;
 import com.intellij.util.ui.JBUI;
+import com.myth.earth.develop.ui.intellij.MyDarculaComboBoxUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import org.jetbrains.annotations.NotNull;
@@ -65,13 +66,14 @@ public class QrCodeBuildViewImpl extends AbstractToolView {
         qrLabel.setHorizontalAlignment(SwingConstants.CENTER);
         textField = new ExpandableTextField();
         optionBox = new ComboBox<>();
+        optionBox.setUI(new MyDarculaComboBoxUI());
         optionBox.setBorder(BorderFactory.createEmptyBorder());
-        optionBox.setBackground(COMBOBOX_COLOR);
+        // optionBox.setBackground(COMBOBOX_COLOR);
         SIZE_OPTIONS.forEach(optionBox::addItem);
         optionBox.setSelectedItem(300);
 
         JPanel optionBoxPanel = new JPanel(new BorderLayout());
-        optionBoxPanel.setBackground(COMBOBOX_COLOR);
+        // optionBoxPanel.setBackground(COMBOBOX_COLOR);
         optionBoxPanel.add(optionBox, BorderLayout.CENTER);
 
         JPanel optPanel = new JPanel();
