@@ -35,7 +35,8 @@ public enum ToolCategory {
     NUMBER("数字工具", null),
     NETWORK("网络工具", null),
     IMAGE("图像工具", null),
-    SQL("SQL工具", null)
+    SQL("SQL工具", null),
+    GIT("Git工具", null)
     ;
 
     /**
