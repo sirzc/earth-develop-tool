@@ -27,6 +27,8 @@ import com.myth.earth.develop.kit.ClipboardKit;
 import com.myth.earth.develop.kit.PluginNotifyKit;
 import com.myth.earth.develop.service.git.GitCommandExecutor;
 import com.myth.earth.develop.service.git.GitException;
+import com.myth.earth.develop.service.git.GitRepository;
+import com.myth.earth.develop.service.git.GitRepositoryFinder;
 import com.myth.earth.develop.service.git.GitStatistics;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
@@ -39,6 +41,7 @@ import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.io.File;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +58,9 @@ import java.util.Optional;
 public class GitStatisticsToolViewImpl extends AbstractToolView {
 
     private GitCommandExecutor executor;
+    private GitRepositoryFinder repositoryFinder;
+    private List<GitRepository> repositories = new ArrayList<>();
+    private ComboBox<GitRepository> repositoryBox;
     private ComboBox<String> timeRangeBox;
     private ComboBox<String> branchBox;
     private JList<String> authorList;
@@ -69,6 +75,11 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
 
         File projectRootFile = new File(project.getBasePath());
         executor = new GitCommandExecutor(projectRootFile);
+        repositoryFinder = new GitRepositoryFinder(projectRootFile);
+
+        // 初始化仓库选择组件
+        repositoryBox = new ComboBox<>();
+        repositoryBox.addItem(null); // 占位符
 
         // 初始化组件
         timeRangeBox = new ComboBox<>();
@@ -114,6 +125,11 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
         JPanel parameterPanel = new JBPanel<>(new BorderLayout());
         parameterPanel.setBorder(JBUI.Borders.empty(10));
 
+        // 仓库选择面板
+        JPanel repositoryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        repositoryPanel.add(new JBLabel("仓库:"));
+        repositoryPanel.add(repositoryBox);
+
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.add(new JBLabel("时间范围:"));
         topPanel.add(timeRangeBox);
@@ -126,6 +142,7 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
         buttonPanel.add(copyButton);
 
         JPanel formPanel = FormBuilder.createFormBuilder()
+                .addComponent(repositoryPanel)
                 .addComponent(topPanel)
                 .addLabeledComponent("作者（支持多选）:", authorScrollPane)
                 .addComponent(buttonPanel)
@@ -151,8 +168,83 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
 
         add(mainPanel, BorderLayout.CENTER);
 
-        // 初始化时加载分支和作者
-        loadBranchAndAuthors();
+        // 添加仓库选择变更监听器
+        repositoryBox.addActionListener(e -> onRepositoryChanged());
+
+        // 初始化时加载仓库列表
+        loadRepositories();
+    }
+
+    /**
+     * 扫描并加载项目内所有 Git 仓库
+     */
+    private void loadRepositories() {
+        statusLabel.setText("扫描仓库中...");
+
+        new Thread(() -> {
+            try {
+                repositories = repositoryFinder.findRepositories();
+
+                SwingUtilities.invokeLater(() -> {
+                    repositoryBox.removeAllItems();
+
+                    if (repositories.isEmpty()) {
+                        statusLabel.setText("未发现 Git 仓库");
+                        setControlsEnabled(false);
+                        return;
+                    }
+
+                    for (GitRepository repo : repositories) {
+                        repositoryBox.addItem(repo);
+                    }
+
+                    // 自动选择主仓库
+                    GitRepository mainRepo = repositories.stream()
+                            .filter(GitRepository::isMainRepository)
+                            .findFirst()
+                            .orElse(repositories.get(0));
+
+                    repositoryBox.setSelectedItem(mainRepo);
+                    setControlsEnabled(true);
+                });
+            } catch (Exception e) {
+                SwingUtilities.invokeLater(() -> {
+                    PluginNotifyKit.error(project, "扫描 Git 仓库失败: " + e.getMessage());
+                    statusLabel.setText("扫描失败");
+                });
+            }
+        }).start();
+    }
+
+    /**
+     * 仓库选择变更事件处理
+     */
+    private void onRepositoryChanged() {
+        GitRepository selectedRepo = (GitRepository) repositoryBox.getSelectedItem();
+        if (selectedRepo == null) {
+            return;
+        }
+
+        try {
+            executor.setWorkingDirectory(selectedRepo.getPath());
+            statusLabel.setText("已切换至仓库: " + selectedRepo.getName());
+            loadBranchAndAuthors();
+        } catch (GitException e) {
+            PluginNotifyKit.error(project, "切换仓库失败: " + e.getMessage());
+            statusLabel.setText("切换失败");
+        }
+    }
+
+    /**
+     * 启用或禁用控制组件
+     */
+    private void setControlsEnabled(boolean enabled) {
+        timeRangeBox.setEnabled(enabled);
+        branchBox.setEnabled(enabled);
+        authorList.setEnabled(enabled);
+        statisticsButton.setEnabled(enabled);
+        refreshButton.setEnabled(enabled);
+        copyButton.setEnabled(enabled);
     }
 
     private void loadBranchAndAuthors() {
@@ -167,8 +259,23 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
                     for (String branch : branches) {
                         branchBox.addItem(branch);
                     }
+
+                    // 获取当前 HEAD 分支并设为默认选择
+                    try {
+                        String currentBranch = executor.getCurrentBranch();
+                        if (currentBranch != null && branches.contains(currentBranch)) {
+                            branchBox.setSelectedItem(currentBranch);
+                        } else if (!branches.isEmpty()) {
+                            branchBox.setSelectedIndex(0);
+                        }
+                    } catch (GitException e) {
+                        // 如果无法获取 HEAD，就选择第一个分支
+                        if (!branches.isEmpty()) {
+                            branchBox.setSelectedIndex(0);
+                        }
+                    }
+
                     if (!branches.isEmpty()) {
-                        branchBox.setSelectedIndex(0);
                         loadAuthors();
                     } else {
                         statusLabel.setText("未找到分支");
@@ -194,6 +301,7 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
                 List<String> authors = executor.getAuthors(selectedBranch, null, null);
                 SwingUtilities.invokeLater(() -> {
                     authorList.setListData(authors.toArray(new String[0])); // 设置JList的数据
+                    statusLabel.setText("就绪");
                 });
             } catch (GitException e) {
                 statusLabel.setText("无法加载作者列表: " + e.getMessage());

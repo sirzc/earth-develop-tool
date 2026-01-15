@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,12 +39,97 @@ import java.util.concurrent.TimeUnit;
  */
 public class GitCommandExecutor {
 
+    private File currentWorkingDir;
     private final File projectRoot;
     private static final int TIMEOUT_SECONDS = 30;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public GitCommandExecutor(File projectRoot) {
         this.projectRoot = projectRoot;
+        this.currentWorkingDir = projectRoot;
+    }
+
+    /**
+     * 设置当前工作目录（Git 仓库）
+     *
+     * @param dir 新的 Git 仓库目录
+     * @throws GitException 如果目录不是有效的 Git 仓库
+     */
+    public void setWorkingDirectory(File dir) throws GitException {
+        if (dir == null || !dir.exists() || !dir.isDirectory()) {
+            throw new GitException("无效的目录: " + (dir != null ? dir.getAbsolutePath() : "null"));
+        }
+
+        if (!isValidGitRepository(dir)) {
+            throw new GitException("不是有效的 Git 仓库: " + dir.getAbsolutePath());
+        }
+
+        this.currentWorkingDir = dir;
+    }
+
+    /**
+     * 获取当前工作目录
+     *
+     * @return 当前工作目录
+     */
+    public File getWorkingDirectory() {
+        return currentWorkingDir;
+    }
+
+    /**
+     * 获取当前 HEAD 分支名称
+     *
+     * @return 分支名称，或 null 如果无法获取（如处于 detached HEAD 状态）
+     * @throws GitException 如果执行失败
+     */
+    public String getCurrentBranch() throws GitException {
+        try {
+            // 首先尝试使用 symbolic-ref
+            try {
+                String output = executeGitCommand("git", "symbolic-ref", "--short", "HEAD");
+                if (output != null && !output.trim().isEmpty()) {
+                    return output.trim();
+                }
+            } catch (GitException e) {
+                // 继续尝试下一种方法
+            }
+
+            // 备选方案：使用 rev-parse
+            String output = executeGitCommand("git", "rev-parse", "--abbrev-ref", "HEAD");
+            if (output != null && !output.trim().isEmpty()) {
+                return output.trim();
+            }
+
+            return null;
+        } catch (Exception e) {
+            throw new GitException("无法获取当前分支: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 验证目录是否为有效的 Git 仓库
+     *
+     * @param dir 要验证的目录
+     * @return true 如果是有效的 Git 仓库，否则 false
+     */
+    private boolean isValidGitRepository(File dir) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("git", "rev-parse", "--git-dir");
+            pb.directory(dir);
+            pb.redirectErrorStream(true);
+
+            Process process = pb.start();
+            boolean completed = process.waitFor(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+            if (!completed) {
+                process.destroyForcibly();
+                return false;
+            }
+
+            return process.exitValue() == 0;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -165,6 +252,82 @@ public class GitCommandExecutor {
     }
 
     /**
+     * 获取指定作者和时间范围内的提交日志列表
+     *
+     * @param branch    分支名称
+     * @param author    作者名
+     * @param startDate 开始日期（LocalDate，可为 null）
+     * @param endDate   结束日期（LocalDate，可为 null）
+     * @return 提交日志列表
+     * @throws GitException 如果执行失败
+     */
+    public List<CommitLog> getCommitLogs(String branch, String author, LocalDate startDate, LocalDate endDate)
+            throws GitException {
+        List<CommitLog> logs = new ArrayList<>();
+        try {
+            // 使用 git log 获取提交信息
+            // 格式: %H (完整哈希) %h (短哈希) %an (作者) %ai (ISO 8601 日期) %s (主题)
+            // 使用 %x00 作为字段分隔符，%x01 作为行分隔符以处理特殊字符
+            List<String> cmd = new ArrayList<>();
+            cmd.add("git");
+            cmd.add("log");
+            cmd.add(branch);
+            cmd.add("--pretty=format:%h%x00%an%x00%ai%x00%s%x01");
+            cmd.add("--no-merges");
+
+            if (startDate != null) {
+                cmd.add("--after=" + startDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
+            }
+            if (endDate != null) {
+                cmd.add("--before=" + endDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
+            }
+
+            if (author != null && !author.isEmpty()) {
+                cmd.add("--author=" + author);
+            }
+
+            String output = executeGitCommandWithList(cmd);
+
+            // 解析输出
+            if (output == null || output.trim().isEmpty()) {
+                return logs;
+            }
+
+            String[] records = output.split("\u0001");
+            for (String record : records) {
+                record = record.trim();
+                if (record.isEmpty()) {
+                    continue;
+                }
+
+                String[] fields = record.split("\u0000");
+                if (fields.length >= 4) {
+                    String hash = fields[0].trim();
+                    String commitAuthor = fields[1].trim();
+                    String dateStr = fields[2].trim();
+                    String message = fields[3].trim();
+
+                    try {
+                        // 解析 ISO 8601 日期 (格式: 2025-01-15 12:34:56 +0800)
+                        String dateOnly = dateStr.substring(0, 10);
+                        LocalDate date = LocalDate.parse(dateOnly, DateTimeFormatter.ISO_LOCAL_DATE);
+
+                        CommitLog log = new CommitLog(hash, commitAuthor, date, message);
+                        logs.add(log);
+                    } catch (Exception e) {
+                        // 日期解析失败，跳过这条记录
+                        continue;
+                    }
+                }
+            }
+
+            return logs;
+        } catch (Exception e) {
+            throw new GitException("无法获取提交日志: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * 执行 Git 命令并返回输出
      *
      * @param command 命令及参数
@@ -173,7 +336,7 @@ public class GitCommandExecutor {
      */
     private String executeGitCommand(String... command) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(command);
-        pb.directory(projectRoot);
+        pb.directory(currentWorkingDir);
         pb.redirectErrorStream(true);
 
         Process process = pb.start();
@@ -210,7 +373,7 @@ public class GitCommandExecutor {
      */
     private String executeGitCommandWithList(List<String> commandList) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(commandList);
-        pb.directory(projectRoot);
+        pb.directory(currentWorkingDir);
 
         Process process = pb.start();
         boolean completed = process.waitFor(TIMEOUT_SECONDS, TimeUnit.SECONDS);
