@@ -17,19 +17,15 @@ package com.myth.earth.develop.ui.toolkit.views;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
-import com.intellij.ui.IdeBorderFactory;
+import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBPanel;
-import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.FormBuilder;
-import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.WrapLayout;
+import com.intellij.util.ui.components.BorderLayoutPanel;
 import com.myth.earth.develop.kit.ClipboardKit;
-import com.myth.earth.develop.kit.PluginNotifyKit;
-import com.myth.earth.develop.service.git.GitCommandExecutor;
-import com.myth.earth.develop.service.git.GitException;
-import com.myth.earth.develop.service.git.GitRepository;
-import com.myth.earth.develop.service.git.GitRepositoryFinder;
-import com.myth.earth.develop.service.git.GitStatistics;
+import com.myth.earth.develop.service.git.*;
+import com.myth.earth.develop.ui.intellij.MyDarculaComboBoxUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import com.myth.earth.develop.ui.toolkit.core.ToolLevel;
@@ -41,11 +37,10 @@ import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.io.File;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
+import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Git 代码统计工具
@@ -53,22 +48,22 @@ import java.util.Optional;
  * @author IngerChao
  * @date 2025-01-15
  */
-@Tool(category = ToolCategory.GIT, level = ToolLevel.HIGH, name = "Git代码统计",
-        description = "统计项目中一定时间范围的代码提交行数和提交次数")
+@Tool(category = ToolCategory.GIT, level = ToolLevel.HIGH, name = "Git代码统计", description = "统计项目中一定时间范围的代码提交行数和提交次数")
 public class GitStatisticsToolViewImpl extends AbstractToolView {
 
-    private GitCommandExecutor executor;
-    private GitRepositoryFinder repositoryFinder;
-    private List<GitRepository> repositories = new ArrayList<>();
-    private ComboBox<GitRepository> repositoryBox;
-    private ComboBox<String> timeRangeBox;
-    private ComboBox<String> branchBox;
-    private JList<String> authorList;
-    private JTable resultTable;
-    private JBLabel statusLabel;
-    private JButton statisticsButton;
-    private JButton refreshButton;
-    private JButton copyButton;
+    private final JPanel                  userWrapPanel;
+    private final DefaultTableModel       resultTableModel;
+    private final GitCommandExecutor      executor;
+    private final GitRepositoryFinder     repositoryFinder;
+    private final JLabel                  tipLabel;
+    private       List<GitRepository>     repositories       = new ArrayList<>();
+    private final ComboBox<GitRepository> repositoryBox;
+    private final ComboBox<String>        timeRangeBox;
+    private final ComboBox<String>        branchBox;
+    private final JBTable                 resultTable;
+    private final JButton                 statisticsButton;
+    private final JButton                 copyButton;
+    private final List<JBCheckBox>        authorCheckBoxList = new ArrayList<>(8);
 
     public GitStatisticsToolViewImpl(@NotNull Project project) {
         super(project);
@@ -79,99 +74,83 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
 
         // 初始化仓库选择组件
         repositoryBox = new ComboBox<>();
-        repositoryBox.addItem(null); // 占位符
+        repositoryBox.setUI(new MyDarculaComboBoxUI());
 
         // 初始化组件
         timeRangeBox = new ComboBox<>();
+        timeRangeBox.setUI(new MyDarculaComboBoxUI());
         timeRangeBox.addItem("最近7天");
         timeRangeBox.addItem("最近30天");
         timeRangeBox.addItem("最近1年");
         timeRangeBox.addItem("全部");
 
         branchBox = new ComboBox<>();
-        branchBox.addItem("加载中...");
+        branchBox.setUI(new MyDarculaComboBoxUI());
 
-        authorList = new JList<>(); // 使用JList代替ComboBox以支持多选
-        authorList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        authorList.setCellRenderer(new DefaultListCellRenderer() {
+        resultTableModel = new DefaultTableModel() {
             @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                setText(value != null ? value.toString() : "");
-                return this;
+            public boolean isCellEditable(int row, int column) {
+                return false; // 设置所有单元格不可编辑
             }
-        });
-        JBScrollPane authorScrollPane = new JBScrollPane(authorList);
-        authorScrollPane.setPreferredSize(JBUI.size(-1, 80));
+        };
+        resultTableModel.addColumn("作者");
+        resultTableModel.addColumn("提交次数");
+        resultTableModel.addColumn("增加行数");
+        resultTableModel.addColumn("删除行数");
+        resultTableModel.addColumn("修改文件数");
 
-        resultTable = new JTable();
-        resultTable.setModel(new DefaultTableModel(
-                new String[]{"作者", "提交次数", "增加行数", "删除行数", "修改文件数"},
-                0));
-        resultTable.setEnabled(false);
+        resultTable = new JBTable(resultTableModel);
+        resultTable.getTableHeader().setVisible(true);
+        resultTable.setRowHeight(25);
+        resultTable.setRowSorter(new TableRowSorter<>(resultTable.getModel()));
+        resultTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-        // 配置行排序器
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) resultTable.getModel());
-        resultTable.setRowSorter(sorter);
-
-        statusLabel = new JBLabel("初始化中...");
-
-        // 创建按钮
-        refreshButton = createButton(50, "刷新", e -> loadBranchAndAuthors());
         statisticsButton = createButton(50, "统计", e -> executeStatistics());
-        copyButton = createButton(60, "复制数据", e -> copyTableData());
+        copyButton = createButton(80, "复制数据", e -> copyTableData());
+        // 添加仓库选择变更监听器
+        repositoryBox.addActionListener(e -> loadBranch());
+        branchBox.addActionListener(e -> loadAuthors());
 
-        // 参数选择区域
-        JPanel parameterPanel = new JBPanel<>(new BorderLayout());
-        parameterPanel.setBorder(JBUI.Borders.empty(10));
+        userWrapPanel = new JPanel(new WrapLayout(WrapLayout.LEFT, 6, 6));
+        BorderLayoutPanel userViewPanel = new BorderLayoutPanel().addToCenter(userWrapPanel);
 
-        // 仓库选择面板
-        JPanel repositoryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        repositoryPanel.add(new JBLabel("仓库:"));
-        repositoryPanel.add(repositoryBox);
+        JPanel gitInfoPanel = new JPanel();
+        gitInfoPanel.setLayout(new BoxLayout(gitInfoPanel, BoxLayout.X_AXIS));
+        gitInfoPanel.add(createLineLabelPanel(50, "仓库", repositoryBox));
+        gitInfoPanel.add(Box.createHorizontalStrut(5));
+        gitInfoPanel.add(createLineLabelPanel(50, "分支", branchBox));
 
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        topPanel.add(new JBLabel("时间范围:"));
-        topPanel.add(timeRangeBox);
-        topPanel.add(new JBLabel("分支:"));
-        topPanel.add(branchBox);
+        JPanel selectOptionPanel = new JPanel();
+        selectOptionPanel.setLayout(new BoxLayout(selectOptionPanel, BoxLayout.X_AXIS));
+        selectOptionPanel.add(createLineLabelPanel(50, "范围", timeRangeBox));
+        selectOptionPanel.add(Box.createHorizontalStrut(5));
+        selectOptionPanel.add(statisticsButton);
+        selectOptionPanel.add(Box.createHorizontalStrut(5));
+        selectOptionPanel.add(copyButton);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        buttonPanel.add(refreshButton);
-        buttonPanel.add(statisticsButton);
-        buttonPanel.add(copyButton);
+        tipLabel = new JBLabel();
+        tipLabel.setText("统计结果");
 
         JPanel formPanel = FormBuilder.createFormBuilder()
-                .addComponent(repositoryPanel)
-                .addComponent(topPanel)
-                .addLabeledComponent("作者（支持多选）:", authorScrollPane)
-                .addComponent(buttonPanel)
-                .addComponent(statusLabel)
-                .getPanel();
+                                      .addComponent(gitInfoPanel)
+                                      .addComponent(createLineLabelPanel(50, "作者", userViewPanel))
+                                      .addComponent(selectOptionPanel)
+                                      .addComponentFillVertically(createBoxLabelPanel(tipLabel, createScrollPane(resultTable)), 10)
+                                      .getPanel();
 
-        parameterPanel.add(formPanel, BorderLayout.NORTH);
+        add(formPanel, BorderLayout.CENTER);
 
-        // 结果显示区域
-        JPanel resultPanel = new JBPanel<>(new BorderLayout());
-        resultPanel.setBorder(IdeBorderFactory.createTitledBorder("统计结果"));
-        JBScrollPane scrollPane = new JBScrollPane(resultTable);
-        resultPanel.add(scrollPane, BorderLayout.CENTER);
+        loadRepositories();
+    }
 
-        // 分割面板
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, parameterPanel, resultPanel);
-        splitPane.setDividerLocation(250);
-        splitPane.setResizeWeight(0.3);
-
-        // 主面板
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(splitPane, BorderLayout.CENTER);
-
-        add(mainPanel, BorderLayout.CENTER);
-
-        // 添加仓库选择变更监听器
-        repositoryBox.addActionListener(e -> onRepositoryChanged());
-
-        // 初始化时加载仓库列表
+    @Override
+    public void manualRefresh() {
+        refreshErrorTip("已刷新");
+        for (int i = resultTableModel.getRowCount() - 1; i >= 0; i--) {
+            resultTableModel.removeRow(i);
+        }
+        resultTable.revalidate();
+        resultTable.repaint();
         loadRepositories();
     }
 
@@ -179,182 +158,89 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
      * 扫描并加载项目内所有 Git 仓库
      */
     private void loadRepositories() {
-        statusLabel.setText("扫描仓库中...");
-
-        new Thread(() -> {
-            try {
-                repositories = repositoryFinder.findRepositories();
-
-                SwingUtilities.invokeLater(() -> {
-                    repositoryBox.removeAllItems();
-
-                    if (repositories.isEmpty()) {
-                        statusLabel.setText("未发现 Git 仓库");
-                        setControlsEnabled(false);
-                        return;
-                    }
-
-                    for (GitRepository repo : repositories) {
-                        repositoryBox.addItem(repo);
-                    }
-
-                    // 自动选择主仓库
-                    GitRepository mainRepo = repositories.stream()
-                            .filter(GitRepository::isMainRepository)
-                            .findFirst()
-                            .orElse(repositories.get(0));
-
-                    repositoryBox.setSelectedItem(mainRepo);
-                    setControlsEnabled(true);
-                });
-            } catch (Exception e) {
-                SwingUtilities.invokeLater(() -> {
-                    PluginNotifyKit.error(project, "扫描 Git 仓库失败: " + e.getMessage());
-                    statusLabel.setText("扫描失败");
-                });
+        repositoryBox.removeAllItems();
+        repositories = repositoryFinder.findRepositories();
+        if (!repositories.isEmpty()) {
+            for (GitRepository repo : repositories) {
+                repositoryBox.addItem(repo);
             }
-        }).start();
+            // 自动选择主仓库
+            GitRepository mainRepo = repositories.stream().filter(GitRepository::isMainRepository).findFirst().orElse(repositories.get(0));
+            repositoryBox.setSelectedItem(mainRepo);
+        } else {
+            refreshErrorTip("未识别到仓库信息，可刷新重试！");
+        }
     }
 
-    /**
-     * 仓库选择变更事件处理
-     */
-    private void onRepositoryChanged() {
-        GitRepository selectedRepo = (GitRepository) repositoryBox.getSelectedItem();
-        if (selectedRepo == null) {
-            return;
-        }
-
+    private void loadBranch() {
         try {
-            executor.setWorkingDirectory(selectedRepo.getPath());
-            statusLabel.setText("已切换至仓库: " + selectedRepo.getName());
-            loadBranchAndAuthors();
-        } catch (GitException e) {
-            PluginNotifyKit.error(project, "切换仓库失败: " + e.getMessage());
-            statusLabel.setText("切换失败");
-        }
-    }
-
-    /**
-     * 启用或禁用控制组件
-     */
-    private void setControlsEnabled(boolean enabled) {
-        timeRangeBox.setEnabled(enabled);
-        branchBox.setEnabled(enabled);
-        authorList.setEnabled(enabled);
-        statisticsButton.setEnabled(enabled);
-        refreshButton.setEnabled(enabled);
-        copyButton.setEnabled(enabled);
-    }
-
-    private void loadBranchAndAuthors() {
-        statusLabel.setText("加载中...");
-
-        new Thread(() -> {
-            try {
-                // 加载分支列表
-                List<String> branches = executor.getBranches();
-                SwingUtilities.invokeLater(() -> {
-                    branchBox.removeAllItems();
-                    for (String branch : branches) {
-                        branchBox.addItem(branch);
-                    }
-
-                    // 获取当前 HEAD 分支并设为默认选择
-                    try {
-                        String currentBranch = executor.getCurrentBranch();
-                        if (currentBranch != null && branches.contains(currentBranch)) {
-                            branchBox.setSelectedItem(currentBranch);
-                        } else if (!branches.isEmpty()) {
-                            branchBox.setSelectedIndex(0);
-                        }
-                    } catch (GitException e) {
-                        // 如果无法获取 HEAD，就选择第一个分支
-                        if (!branches.isEmpty()) {
-                            branchBox.setSelectedIndex(0);
-                        }
-                    }
-
-                    if (!branches.isEmpty()) {
-                        loadAuthors();
-                    } else {
-                        statusLabel.setText("未找到分支");
-                    }
-                });
-            } catch (GitException e) {
-                SwingUtilities.invokeLater(() -> {
-                    statusLabel.setText("错误: " + e.getMessage());
-                    PluginNotifyKit.error(project, e.getMessage());
-                });
+            branchBox.removeAllItems();
+            GitRepository selectedRepo = (GitRepository) repositoryBox.getSelectedItem();
+            if (selectedRepo == null) {
+                return;
             }
-        }).start();
+            // 重新加载分支列表
+            executor.setWorkingDirectory(selectedRepo.getPath());
+            List<String> branches = executor.getBranches();
+            for (String branch : branches) {
+                branchBox.addItem(branch);
+            }
+
+            String currentBranch = executor.getCurrentBranch();
+            if (currentBranch != null && branches.contains(currentBranch)) {
+                branchBox.setSelectedItem(currentBranch);
+            } else if (!branches.isEmpty()) {
+                branchBox.setSelectedIndex(0);
+            }
+        } catch (GitException e) {
+            refreshErrorTip("Git获取分支失败：" + e.getMessage());
+        }
     }
 
     private void loadAuthors() {
-        String selectedBranch = (String) branchBox.getSelectedItem();
-        if (selectedBranch == null) {
-            return;
-        }
-
-        new Thread(() -> {
-            try {
+        try {
+            userWrapPanel.removeAll();
+            String selectedBranch = (String) branchBox.getSelectedItem();
+            if (selectedBranch != null) {
                 List<String> authors = executor.getAuthors(selectedBranch, null, null);
-                SwingUtilities.invokeLater(() -> {
-                    authorList.setListData(authors.toArray(new String[0])); // 设置JList的数据
-                    statusLabel.setText("就绪");
-                });
-            } catch (GitException e) {
-                statusLabel.setText("无法加载作者列表: " + e.getMessage());
+                authorCheckBoxList.clear();
+                for (String author : authors) {
+                    JBCheckBox jbCheckBox = new JBCheckBox(author);
+                    jbCheckBox.setSelected(true);
+                    userWrapPanel.add(jbCheckBox);
+                    authorCheckBoxList.add(jbCheckBox);
+                }
             }
-        }).start();
+        } catch (GitException e) {
+            refreshErrorTip("Git获取作者失败：" + e.getMessage());
+        } finally {
+            userWrapPanel.revalidate();
+            userWrapPanel.repaint();
+        }
     }
 
     private void executeStatistics() {
         String selectedBranch = (String) branchBox.getSelectedItem();
         if (selectedBranch == null) {
-            PluginNotifyKit.error(project, "请选择分支");
+            refreshErrorTip("请选择分支");
             return;
         }
 
         Date startDate = getStartDate();
         Date endDate = new Date();
 
-        List<String> selectedAuthors = authorList.getSelectedValuesList(); // 从JList获取选中值
-
-        statusLabel.setText("统计中...");
-        statisticsButton.setEnabled(false);
-
-        new Thread(() -> {
-            try {
-                Map<String, GitStatistics> stats = executor.getStatistics(
-                        selectedBranch,
-                        startDate,
-                        endDate,
-                        selectedAuthors.isEmpty() ? null : selectedAuthors);
-
-                SwingUtilities.invokeLater(() -> {
-                    if (stats.isEmpty()) {
-                        statusLabel.setText("统计完成，共 0 个作者");
-                    } else {
-                        updateResultTable(stats);
-                        statusLabel.setText("统计完成，共 " + stats.size() + " 个作者");
-                    }
-                    statisticsButton.setEnabled(true);
-                });
-            } catch (GitException e) {
-                SwingUtilities.invokeLater(() -> {
-                    statusLabel.setText("统计失败: " + e.getMessage());
-                    PluginNotifyKit.error(project, "Git 统计失败：" + e.getMessage());
-                    statisticsButton.setEnabled(true);
-                });
-            } catch (Exception e) {
-                SwingUtilities.invokeLater(() -> {
-                    statusLabel.setText("异常: " + e.getMessage());
-                    PluginNotifyKit.error(project, "异常：" + e.getMessage());
-                    statisticsButton.setEnabled(true);
-                });
-            }
-        }).start();
+        List<String> selectedAuthors = authorCheckBoxList.stream().filter(JBCheckBox::isSelected).map(JBCheckBox::getText).collect(Collectors.toList());
+        try {
+            statisticsButton.setEnabled(false);
+            Map<String, GitStatistics> stats = executor.getStatistics(selectedBranch, startDate, endDate, selectedAuthors);
+            updateResultTable(stats);
+        } catch (GitException e) {
+            refreshErrorTip("Git 统计失败：" + e.getMessage());
+        } catch (Exception e) {
+            refreshErrorTip("异常：" + e.getMessage());
+        } finally {
+            statisticsButton.setEnabled(true);
+        }
     }
 
     private Date getStartDate() {
@@ -376,12 +262,15 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
                 startLocal = today.minusYears(10);
                 break;
         }
-        return java.sql.Date.valueOf(startLocal);
+
+        return Date.from(startLocal.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
     private void updateResultTable(Map<String, GitStatistics> stats) {
-        DefaultTableModel model = (DefaultTableModel) resultTable.getModel();
-        model.setRowCount(0);
+        // 清除现有数据
+        for (int i = resultTableModel.getRowCount() - 1; i >= 0; i--) {
+            resultTableModel.removeRow(i);
+        }
 
         int totalCommits = 0;
         int totalAdded = 0;
@@ -389,13 +278,7 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
         int totalFilesModified = 0;
 
         for (GitStatistics stat : stats.values()) {
-            model.addRow(new Object[]{
-                    stat.getAuthor(),
-                    stat.getCommitCount(),
-                    stat.getLinesAdded(),
-                    stat.getLinesRemoved(),
-                    stat.getFilesModified()
-            });
+            resultTableModel.addRow(new Object[] {stat.getAuthor(), stat.getCommitCount(), stat.getLinesAdded(), stat.getLinesRemoved(), stat.getFilesModified()});
             totalCommits += stat.getCommitCount();
             totalAdded += stat.getLinesAdded();
             totalRemoved += stat.getLinesRemoved();
@@ -403,26 +286,20 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
         }
 
         // 添加总计行
-        model.addRow(new Object[]{
-                "总计",
-                totalCommits,
-                totalAdded,
-                totalRemoved,
-                totalFilesModified
-        });
+        resultTableModel.addRow(new Object[] {"总计", totalCommits, totalAdded, totalRemoved, totalFilesModified});
 
+        refreshNormalTip("统计完成");
         // 刷新表格显示
         resultTable.revalidate();
         resultTable.repaint();
     }
 
     private void copyTableData() {
-        DefaultTableModel model = (DefaultTableModel) resultTable.getModel();
-        int rows = model.getRowCount();
-        int cols = model.getColumnCount();
+        int rows = resultTableModel.getRowCount();
+        int cols = resultTableModel.getColumnCount();
 
         if (rows == 0) {
-            PluginNotifyKit.warn(project, "没有数据可复制");
+            refreshErrorTip("暂无统计结果");
             return;
         }
 
@@ -432,7 +309,7 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
             if (i > 0) {
                 sb.append("\t");
             }
-            sb.append(model.getColumnName(i));
+            sb.append(resultTableModel.getColumnName(i));
         }
         sb.append("\n");
 
@@ -442,13 +319,20 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
                 if (j > 0) {
                     sb.append("\t");
                 }
-                sb.append(model.getValueAt(i, j));
+                sb.append(resultTableModel.getValueAt(i, j));
             }
             sb.append("\n");
         }
 
         ClipboardKit.copy(sb.toString());
-        PluginNotifyKit.info(project, "已复制到剪贴板");
+        refreshNormalTip("已复制");
     }
 
+    private void refreshNormalTip(String tip) {
+        tipLabel.setText("<html><body>统计结果 <b style='color:green;'>" + tip + "</b></body></html>");
+    }
+
+    private void refreshErrorTip(String tip) {
+        tipLabel.setText("<html><body>统计结果 <b style='color:orange;'>" + tip + "</b></body></html>");
+    }
 }

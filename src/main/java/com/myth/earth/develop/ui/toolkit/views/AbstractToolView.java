@@ -148,10 +148,20 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
      * @return 上下结构带label的panel
      */
     protected static JPanel createBoxLabelPanel(@NotNull String tag, @NotNull JComponent component) {
+        return createBoxLabelPanel(new JBLabel(tag), component);
+    }
+
+    /**
+     * 创建一个label盒子panel
+     *
+     * @param label     标签
+     * @param component 显示内容
+     * @return 上下结构带label的panel
+     */
+    protected static JPanel createBoxLabelPanel(@NotNull JLabel label, @NotNull JComponent component) {
         JPanel labelPanel = new JPanel(new BorderLayout());
         labelPanel.setBorder(IdeBorderFactory.createBorder());
 
-        JBLabel label = new JBLabel(tag);
         label.setPreferredSize(JBUI.size(-1, 35));
         label.setBorder(JBUI.Borders.emptyLeft(10));
 

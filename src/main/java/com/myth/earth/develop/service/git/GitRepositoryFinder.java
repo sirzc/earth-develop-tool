@@ -15,15 +15,13 @@
 
 package com.myth.earth.develop.service.git;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -64,6 +62,7 @@ public class GitRepositoryFinder {
      * 扫描项目内所有 Git 仓库
      * @return Git 仓库列表
      */
+    @NotNull
     public List<GitRepository> findRepositories() {
         return findRepositories(DEFAULT_MAX_DEPTH);
     }
@@ -74,6 +73,7 @@ public class GitRepositoryFinder {
      * @param maxDepth    最大扫描深度
      * @return Git 仓库列表
      */
+    @NotNull
     public List<GitRepository> findRepositories(int maxDepth) {
         List<GitRepository> repositories = new ArrayList<>();
 

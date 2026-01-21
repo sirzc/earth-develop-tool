@@ -15,6 +15,8 @@
 
 package com.myth.earth.develop.service.git;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -22,13 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -138,6 +134,7 @@ public class GitCommandExecutor {
      * @return 分支列表
      * @throws GitException 如果执行失败
      */
+    @NotNull
     public List<String> getBranches() throws GitException {
         List<String> branches = new ArrayList<>();
         try {
