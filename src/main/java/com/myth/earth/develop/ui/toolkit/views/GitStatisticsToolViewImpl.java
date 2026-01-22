@@ -329,10 +329,10 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
     }
 
     private void refreshNormalTip(String tip) {
-        tipLabel.setText("<html><body>统计结果 <b style='color:green;'>" + tip + "</b></body></html>");
+        beautifyLabel(tipLabel, ColorLevel.GREEN, "统计结果", tip);
     }
 
     private void refreshErrorTip(String tip) {
-        tipLabel.setText("<html><body>统计结果 <b style='color:orange;'>" + tip + "</b></body></html>");
+        beautifyLabel(tipLabel, ColorLevel.ORANGE, "统计结果", tip);
     }
 }

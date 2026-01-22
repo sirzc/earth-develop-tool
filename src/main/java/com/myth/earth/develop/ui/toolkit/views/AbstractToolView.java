@@ -27,10 +27,12 @@ import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Optional;
 
 /**
  * 封装统一的工具面板内容
@@ -169,5 +171,29 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
         labelPanel.add(label, BorderLayout.NORTH);
         labelPanel.add(component, BorderLayout.CENTER);
         return labelPanel;
+    }
+
+    protected static void beautifyLabel(@NotNull JLabel label, @NotNull ColorLevel level, @Nullable String keep, @Nullable String beautify) {
+        if (keep == null && beautify == null) {
+            return;
+        }
+
+        keep = Optional.ofNullable(keep).orElse("");
+        beautify = Optional.ofNullable(beautify).orElse("");
+        label.setText("<html><body>" + keep + " <b style='color:" + level.getColor() + ";'>" + beautify + "</b></body></html>");
+    }
+
+    protected enum ColorLevel {
+        GREEN("green"), ORANGE("orange"), RED("red");
+
+        private final String color;
+
+        ColorLevel(String color) {
+            this.color = color;
+        }
+
+        public String getColor() {
+            return color;
+        }
     }
 }
