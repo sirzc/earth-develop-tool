@@ -17,12 +17,15 @@ package com.myth.earth.develop.ui.toolkit.views;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBLoadingPanel;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.FormBuilder;
+import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.WrapLayout;
-import com.intellij.util.ui.components.BorderLayoutPanel;
 import com.myth.earth.develop.kit.ClipboardKit;
 import com.myth.earth.develop.service.git.*;
 import com.myth.earth.develop.ui.intellij.MyDarculaComboBoxUI;
@@ -56,6 +59,7 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
     private final GitCommandExecutor      executor;
     private final GitRepositoryFinder     repositoryFinder;
     private final JLabel                  tipLabel;
+    private final JBLoadingPanel          loadingPanel;
     private       List<GitRepository>     repositories       = new ArrayList<>();
     private final ComboBox<GitRepository> repositoryBox;
     private final ComboBox<String>        timeRangeBox;
@@ -112,7 +116,8 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
         branchBox.addActionListener(e -> loadAuthors());
 
         userWrapPanel = new JPanel(new WrapLayout(WrapLayout.LEFT, 6, 6));
-        BorderLayoutPanel userViewPanel = new BorderLayoutPanel().addToCenter(userWrapPanel);
+        JBScrollPane userViewPanel = createScrollPane(userWrapPanel);
+        userViewPanel.setPreferredSize(JBUI.size(-1, 66));
 
         JPanel gitInfoPanel = new JPanel();
         gitInfoPanel.setLayout(new BoxLayout(gitInfoPanel, BoxLayout.X_AXIS));
@@ -131,11 +136,18 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
         tipLabel = new JBLabel();
         tipLabel.setText("统计结果");
 
+        JBScrollPane scrollPane = createScrollPane(resultTable);
+        scrollPane.setBorder(JBUI.Borders.empty());
+
+        loadingPanel = new JBLoadingPanel(new BorderLayout(), Disposer.newDisposable());
+        loadingPanel.setLoadingText("数据加载中...");
+        loadingPanel.add(scrollPane);
+
         JPanel formPanel = FormBuilder.createFormBuilder()
                                       .addComponent(gitInfoPanel)
                                       .addComponent(createLineLabelPanel(50, "作者", userViewPanel))
                                       .addComponent(selectOptionPanel)
-                                      .addComponentFillVertically(createBoxLabelPanel(tipLabel, createScrollPane(resultTable)), 10)
+                                      .addComponentFillVertically(createBoxLabelPanel(tipLabel, loadingPanel), 10)
                                       .getPanel();
 
         add(formPanel, BorderLayout.CENTER);
@@ -220,26 +232,32 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
     }
 
     private void executeStatistics() {
+        refreshNormalTip("");
         String selectedBranch = (String) branchBox.getSelectedItem();
         if (selectedBranch == null) {
             refreshErrorTip("请选择分支");
             return;
         }
 
+        if (loadingPanel.isLoading()) {
+            return;
+        }
+
         Date startDate = getStartDate();
         Date endDate = new Date();
-
         List<String> selectedAuthors = authorCheckBoxList.stream().filter(JBCheckBox::isSelected).map(JBCheckBox::getText).collect(Collectors.toList());
+
         try {
-            statisticsButton.setEnabled(false);
+            loadingPanel.startLoading();
             Map<String, GitStatistics> stats = executor.getStatistics(selectedBranch, startDate, endDate, selectedAuthors);
             updateResultTable(stats);
+            refreshNormalTip("统计完成");
         } catch (GitException e) {
             refreshErrorTip("Git 统计失败：" + e.getMessage());
         } catch (Exception e) {
             refreshErrorTip("异常：" + e.getMessage());
         } finally {
-            statisticsButton.setEnabled(true);
+            loadingPanel.stopLoading();
         }
     }
 
@@ -288,7 +306,6 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
         // 添加总计行
         resultTableModel.addRow(new Object[] {"总计", totalCommits, totalAdded, totalRemoved, totalFilesModified});
 
-        refreshNormalTip("统计完成");
         // 刷新表格显示
         resultTable.revalidate();
         resultTable.repaint();
