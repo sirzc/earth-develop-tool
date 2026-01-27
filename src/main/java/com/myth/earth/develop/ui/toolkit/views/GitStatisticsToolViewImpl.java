@@ -18,6 +18,7 @@ package com.myth.earth.develop.ui.toolkit.views;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBLoadingPanel;
@@ -26,6 +27,7 @@ import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.WrapLayout;
+import com.intellij.util.ui.components.BorderLayoutPanel;
 import com.myth.earth.develop.kit.ClipboardKit;
 import com.myth.earth.develop.service.git.*;
 import com.myth.earth.develop.ui.intellij.MyDarculaComboBoxUI;
@@ -60,6 +62,8 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
     private final GitRepositoryFinder     repositoryFinder;
     private final JLabel                  tipLabel;
     private final JBLoadingPanel          loadingPanel;
+    private final DefaultTableModel countTableModel;
+    private final JBTable countTable;
     private       List<GitRepository>     repositories       = new ArrayList<>();
     private final ComboBox<GitRepository> repositoryBox;
     private final ComboBox<String>        timeRangeBox;
@@ -109,6 +113,18 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
         resultTable.setRowSorter(new TableRowSorter<>(resultTable.getModel()));
         resultTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
+        countTableModel = new DefaultTableModel(0, 5) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // 设置所有单元格不可编辑
+            }
+        };
+
+        countTable = new JBTable(countTableModel);
+        countTable.setBorder(new CustomLineBorder(JBUI.insetsTop(1)));
+        countTable.getTableHeader().setVisible(false);
+        countTable.setRowHeight(25);
+
         statisticsButton = createButton(50, "统计", e -> executeStatistics());
         copyButton = createButton(80, "复制数据", e -> copyTableData());
         // 添加仓库选择变更监听器
@@ -141,7 +157,7 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
 
         loadingPanel = new JBLoadingPanel(new BorderLayout(), Disposer.newDisposable());
         loadingPanel.setLoadingText("数据加载中...");
-        loadingPanel.add(scrollPane);
+        loadingPanel.add(new BorderLayoutPanel().addToCenter(scrollPane).addToBottom(countTable));
 
         JPanel formPanel = FormBuilder.createFormBuilder()
                                       .addComponent(gitInfoPanel)
@@ -161,8 +177,13 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
         for (int i = resultTableModel.getRowCount() - 1; i >= 0; i--) {
             resultTableModel.removeRow(i);
         }
+        if (countTableModel.getRowCount() == 1) {
+            countTableModel.removeRow(0);
+        }
         resultTable.revalidate();
         resultTable.repaint();
+        countTable.revalidate();
+        countTable.repaint();
         loadRepositories();
     }
 
@@ -289,6 +310,9 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
         for (int i = resultTableModel.getRowCount() - 1; i >= 0; i--) {
             resultTableModel.removeRow(i);
         }
+        if (countTableModel.getRowCount() == 1) {
+            countTableModel.removeRow(0);
+        }
 
         int totalCommits = 0;
         int totalAdded = 0;
@@ -303,12 +327,14 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
             totalFilesModified += stat.getFilesModified();
         }
 
-        // 添加总计行
-        resultTableModel.addRow(new Object[] {"总计", totalCommits, totalAdded, totalRemoved, totalFilesModified});
-
         // 刷新表格显示
         resultTable.revalidate();
         resultTable.repaint();
+
+        // 添加总计行
+        countTableModel.addRow(new Object[] {"总计", totalCommits, totalAdded, totalRemoved, totalFilesModified});
+        countTable.revalidate();
+        countTable.repaint();
     }
 
     private void copyTableData() {
@@ -337,6 +363,17 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
                     sb.append("\t");
                 }
                 sb.append(resultTableModel.getValueAt(i, j));
+            }
+            sb.append("\n");
+        }
+
+        // 添加总计行数据
+        if (countTableModel.getRowCount() > 0) {
+            for (int i = 0; i < 5; i++) {
+                if (i > 0) {
+                    sb.append("\t");
+                }
+                sb.append(countTableModel.getValueAt(0, i));
             }
             sb.append("\n");
         }
