@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  * @author IngerChao
  * @date 2025-01-15
  */
-@Tool(category = ToolCategory.GIT, level = ToolLevel.HIGH, name = "Git代码统计", description = "统计项目中一定时间范围的代码提交行数和提交次数")
+@Tool(category = ToolCategory.GIT, level = ToolLevel.HIGH, name = "Git代码统计(bate)", description = "统计项目中一定时间范围的代码提交行数和提交次数")
 public class GitStatisticsToolViewImpl extends AbstractToolView {
 
     private final JPanel                  userWrapPanel;

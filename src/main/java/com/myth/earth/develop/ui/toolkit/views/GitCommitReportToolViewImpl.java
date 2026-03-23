@@ -44,7 +44,7 @@ import java.util.Optional;
  * @author zhouchao
  * @date 2025-01-15
  */
-@Tool(category = ToolCategory.GIT, level = ToolLevel.HIGH, name = "Git提交报告", description = "生成跨仓库的 Git 提交周报，支持自定义时间范围和作者选择")
+@Tool(category = ToolCategory.GIT, level = ToolLevel.HIGH, name = "Git提交报告(bate)", description = "生成跨仓库的 Git 提交周报，支持自定义时间范围和作者选择")
 public class GitCommitReportToolViewImpl extends AbstractToolView {
 
     private GitCommandExecutor  executor;
