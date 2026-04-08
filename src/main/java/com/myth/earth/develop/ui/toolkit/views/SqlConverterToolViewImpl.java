@@ -5,6 +5,8 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.WrapLayout;
+import com.myth.earth.develop.kit.ClipboardKit;
 import com.myth.earth.develop.service.logtosql.MybatisLogParser;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
@@ -24,8 +26,6 @@ public class SqlConverterToolViewImpl extends AbstractToolView {
 
     private final JBTextArea inputTextArea;
     private final JBTextArea outputTextArea;
-    private final JButton convertButton;
-
 
     public SqlConverterToolViewImpl(@NotNull Project project) {
         super(project);
@@ -39,11 +39,15 @@ public class SqlConverterToolViewImpl extends AbstractToolView {
         outputTextArea.setEditable(false);
         outputTextArea.setToolTipText("转换后的SQL语句");
 
-        // 创建转换按钮
-        convertButton = createButton(50, "转换", e -> convert());
+        JPanel topPanel = new JPanel(new WrapLayout(WrapLayout.LEFT, 5, 5));
+        topPanel.add(createButton(50, "转换", e -> convert()));
+        topPanel.add(createButton(110, "复制到剪贴板", e -> {
+            String text = outputTextArea.getText();
+            ClipboardKit.copy(text);
+        }));
 
         JPanel centerPanel = FormBuilder.createFormBuilder()
-                                        .addComponent(convertButton)
+                                        .addComponent(topPanel)
                                         .addComponentFillVertically(createBoxLabelPanel("MyBatis日志输入:", new JBScrollPane(inputTextArea)), 5)
                                         .addComponentFillVertically(createBoxLabelPanel("SQL输出:", new JBScrollPane(outputTextArea)), 5)
                                         .getPanel();
