@@ -56,9 +56,13 @@ public class MybatisLogParser {
         String[] paramList = params.split(",\\s*");
         for (String param : paramList) {
             String value = param.replaceAll("\\(.*?\\)", "").trim();
-            if (param.toLowerCase().contains("string") || param.contains("'")) {
+            String lowerParam = param.toLowerCase();
+            if (lowerParam.contains("string") || param.contains("'")) {
                 // 处理字符串转义
                 value = "'" + value.replace("'", "''") + "'";
+            } else if (lowerParam.contains("timestamp")) {
+                // 处理时间戳类型 - 添加单引号
+                value = "'" + value + "'";
             }
             sqlTemplate = sqlTemplate.replaceFirst("\\?", value);
         }
