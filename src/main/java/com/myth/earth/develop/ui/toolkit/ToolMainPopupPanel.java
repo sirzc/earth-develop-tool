@@ -22,6 +22,7 @@ import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.MouseChecker;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
@@ -69,7 +70,7 @@ import java.util.function.Consumer;
  * @author zhouchao
  * @date 2025-09-09 下午3:41
  */
-public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable, MouseChecker {
+public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable, MouseChecker, Computable<Boolean> {
 
     public static final  String                                                 TOOLKIT_TITLE    = "工具箱";
     private static final Color                                                  LINE_COLOR       = new JBColor(Gray._189, Gray._100);
@@ -87,6 +88,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     private              boolean                                                pinWindow;
     private              JBPopup                                                showPopup;
     private              ToolView                                               toolView;
+    private              boolean                                                isMax            = false;
 
     public ToolMainPopupPanel(Project project, Map<ToolCategory, List<Class<? extends ToolView>>> toolCategoryListMap) {
         this.project = project;
@@ -394,6 +396,12 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
         };
     }
 
+    @Override
+    public Boolean compute() {
+        isMax = false;
+        return true;
+    }
+
     private static class HintHtmlLabel extends HtmlPanel {
         private String detailText = "";
 
@@ -468,8 +476,6 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
     }
 
     private class ResizeViewAction extends AnAction {
-
-        private boolean isMax = false;
 
         public ResizeViewAction() {
             super("最大", "调整大小", PluginIcons.MAX_16X16);

@@ -65,7 +65,7 @@ public class ToolkitProjectService {
                                                       .setProject(project).setModalContext(false).setCancelOnClickOutside(false).setRequestFocus(true)
                                                       .setCancelKeyEnabled(true)
                                                       .setCancelOnWindowDeactivation(false)
-                                                      // .setCancelCallback(() -> false)
+                                                      .setCancelCallback(toolMainPopupPanel)
                                                       .setCancelOnMouseOutCallback(toolMainPopupPanel)// 鼠标外移回调，仅在mac 全屏下才启作用
                                                       .addUserData("SIMPLE_WINDOW").setResizable(true).setMovable(true)
                                                       // .setDimensionServiceKey(project,KEY.getName(), true)
