@@ -3,7 +3,7 @@ package com.myth.earth.develop.utils;
 import com.google.common.collect.Maps;
 import com.myth.earth.develop.model.CompareResult;
 import com.myth.earth.develop.model.DifferenceResult;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;

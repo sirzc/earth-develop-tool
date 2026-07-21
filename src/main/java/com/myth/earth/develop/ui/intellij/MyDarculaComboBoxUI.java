@@ -1,6 +1,7 @@
 package com.myth.earth.develop.ui.intellij;
 
 import com.intellij.ide.ui.laf.darcula.DarculaUIUtil;
+import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.ui.ComboBoxWithWidePopup;
 import com.intellij.openapi.ui.ErrorBorderCapable;
 import com.intellij.openapi.util.Comparing;
@@ -9,10 +10,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.*;
 import com.intellij.ui.scale.JBUIScale;
 import com.intellij.util.ObjectUtils;
-import com.intellij.util.ui.JBInsets;
-import com.intellij.util.ui.JBUI;
-import com.intellij.util.ui.StartupUiUtil;
-import com.intellij.util.ui.UIUtil;
+import com.intellij.util.ui.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,8 +32,14 @@ import java.beans.PropertyChangeListener;
 import static com.intellij.ide.ui.laf.darcula.DarculaUIUtil.*;
 
 public class MyDarculaComboBoxUI extends BasicComboBoxUI implements Border, ErrorBorderCapable {
-    // @SuppressWarnings("UnregisteredNamedColor")
-    // private static final Color NON_EDITABLE_BACKGROUND = JBColor.namedColor("ComboBox.nonEditableBackground", JBColor.namedColor("ComboBox.darcula.nonEditableBackground", new JBColor(0xfcfcfc, 0x3c3f41)));
+    private static final JBValue MINIMUM_WIDTH  = new JBValue.Float(49.0F);
+    private static final JBValue MINIMUM_HEIGHT = new JBValue.Float(24.0F);
+    private static final JBValue COMPACT_HEIGHT = new JBValue.Float(20.0F);
+    private static final JBValue ARROW_BUTTON_WIDTH = new JBValue.Float(23.0F);
+    private static final JBValue LW = new JBValue.Float(1.0F);
+    private static final JBValue BW = new JBValue.UIInteger("Component.focusWidth", 2);
+    private static final JBValue COMPONENT_ARC = new JBValue.UIInteger("Component.arc", 5);
+    private static final boolean isNewUISupported   = ApplicationInfo.getInstance().getBuild().getBaselineVersion() > 253;
 
     private float   myArc                = COMPONENT_ARC.getFloat();
     private Insets  myBorderCompensation = JBUI.insets(1);
@@ -288,6 +292,7 @@ public class MyDarculaComboBoxUI extends BasicComboBoxUI implements Border, Erro
     // }
 
     @Override
+    @Deprecated
     public void paintCurrentValue(Graphics g, Rectangle bounds, boolean hasFocus) {
         ListCellRenderer<Object> renderer = comboBox.getRenderer();
         Object value = comboBox.getSelectedItem();
@@ -779,6 +784,10 @@ public class MyDarculaComboBoxUI extends BasicComboBoxUI implements Border, Erro
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 //noinspection unchecked
                 Component component = comboBox.getRenderer().getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (isNewUISupported) {
+                    return component;
+                }
+
                 if (component instanceof JComponent) {
                     customizeListRendererComponent((JComponent) component);
                 }
