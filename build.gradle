@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.myth.earth'
-version '1.8.1'
+version '1.9'
 
 repositories {
     mavenCentral()
@@ -38,8 +38,10 @@ patchPluginXml {
     changeNotes = """
       <h3>版本更新: ${project.version}</h3>
       <ul>
-        <li>新增：Git提交报告</li>
-        <li>新增：Git代码统计</li>
+        <li>新增：Maven、Gradle互转</li>
+        <li>新增：SQL 复制</li>
+        <li>优化：最大化样式、json 支持字符串比较</li>
+        <li>修复：2026.2不支持问题</li>
       </ul>
     """
 }
