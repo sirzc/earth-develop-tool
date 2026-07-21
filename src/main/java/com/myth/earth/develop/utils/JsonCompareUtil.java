@@ -38,21 +38,20 @@ public class JsonCompareUtil {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static CompareResult parseAndCompare(@NotNull String sourcePath, @NotNull String targetPath) throws IOException {
-        return compareJsonFiles(new File(sourcePath), new File(targetPath));
+        JsonNode sourceRoot = sourcePath.endsWith(FILE_TYPE) ? objectMapper.readTree(new File(sourcePath)) : objectMapper.readTree(sourcePath);
+        JsonNode targetRoot = targetPath.endsWith(FILE_TYPE) ? objectMapper.readTree(new File(targetPath)) : objectMapper.readTree(targetPath);
+        return compareJsonFiles(sourceRoot, targetRoot);
     }
 
     /**
      * 比较两个JSON文件
      *
-     * @param sourceFile 源JSON文件
-     * @param targetFile 目标JSON文件
+     * @param sourceRoot 源JSON文件
+     * @param targetRoot 目标JSON文件
      * @return CompareResult 比较结果
      * @throws IOException 文件读取异常
      */
-    public static CompareResult compareJsonFiles(File sourceFile, File targetFile) throws IOException {
-        JsonNode sourceRoot = objectMapper.readTree(sourceFile);
-        JsonNode targetRoot = objectMapper.readTree(targetFile);
-
+    public static CompareResult compareJsonFiles(JsonNode sourceRoot, JsonNode targetRoot) throws IOException {
         Map<String, String> sourceFlatMap = new HashMap<>();
         Map<String, String> targetFlatMap = new HashMap<>();
 
