@@ -88,5 +88,13 @@
                 text="工具箱设置" />
 
         <action id="EarthDevelopTool.ToolKitTreeToggle" class="com.myth.earth.develop.action.ToolKitTreeToggleAction"/>
+
+        <!-- MyBatis XML 右键生成 SQL -->
+        <action id="EarthDevelopTool.MybatisGenerateSql"
+                class="com.myth.earth.develop.action.MybatisGenerateSqlAction"
+                text="Generate SQL"
+                description="从 MyBatis XML statement 生成预执行 SQL">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
     </actions>
 </idea-plugin>
