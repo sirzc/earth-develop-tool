@@ -16,10 +16,13 @@
 package com.myth.earth.develop.ui.toolkit.views;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.util.concurrency.Semaphore;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.kit.ClipboardKit;
@@ -62,6 +65,7 @@ public class GitCommitReportToolViewImpl extends AbstractToolView {
     private JButton             clearButton;
     private JTextArea           reportArea;
     private JBLabel             statusLabel;
+    private final Integer       DEFAULT_WAIT_TIME = 1000;
 
     public GitCommitReportToolViewImpl(@NotNull Project project) {
         super(project);
@@ -178,36 +182,57 @@ public class GitCommitReportToolViewImpl extends AbstractToolView {
      * 加载仓库和作者列表
      */
     private void loadRepositoriesAndAuthors() {
-        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            repositories = repositoryFinder.findRepositories();
-            // 收集所有作者
-            List<String> allAuthors = new ArrayList<>();
-            for (GitRepository repo : repositories) {
-                try {
-                    executor.setWorkingDirectory(repo.getPath());
-                    List<String> repoAuthors = executor.getAuthors("HEAD", null, null);
-                    for (String author : repoAuthors) {
-                        if (!allAuthors.contains(author)) {
-                            allAuthors.add(author);
+        new Task.Backgroundable(project, "开始获取作者仓库信息", true) {
+            @Override
+            public void run(@NotNull ProgressIndicator progressIndicator) {
+                // 收集所有作者
+                List<String> allAuthors = new ArrayList<>();
+                Semaphore done = new Semaphore();
+                done.down();
+                ApplicationManager.getApplication().executeOnPooledThread(() -> {
+                    try {
+                        repositories = repositoryFinder.findRepositories();
+                        for (GitRepository repo : repositories) {
+                            try {
+                                File path = repo.getPath();
+                                progressIndicator.setText2(path.getAbsolutePath());
+                                executor.setWorkingDirectory(path);
+                                List<String> repoAuthors = executor.getAuthors("HEAD", null, null);
+                                for (String author : repoAuthors) {
+                                    if (!allAuthors.contains(author)) {
+                                        allAuthors.add(author);
+                                    }
+                                }
+                            } catch (GitException e) {
+                                // 继续处理其他仓库
+                            }
                         }
+                    } finally {
+                        done.up();
                     }
-                } catch (GitException e) {
-                    // 继续处理其他仓库
+                });
+
+                while (!done.waitFor(DEFAULT_WAIT_TIME)) {
+                    if (progressIndicator.isCanceled()) {
+                        break;
+                    }
                 }
-            }
 
-            if (authorBox.getItemCount() > 0) {
-                authorBox.removeAllItems();
-            }
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    if (authorBox.getItemCount() > 0) {
+                        authorBox.removeAllItems();
+                    }
 
-            for (String author : allAuthors) {
-                authorBox.addItem(author);
-            }
+                    for (String author : allAuthors) {
+                        authorBox.addItem(author);
+                    }
 
-            if (allAuthors.isEmpty()) {
-                refreshErrorTip("未找到作者");
+                    if (allAuthors.isEmpty()) {
+                        refreshErrorTip("未找到作者");
+                    }
+                });
             }
-        });
+        }.queue();
     }
 
     private void onTimeRangeChanged() {

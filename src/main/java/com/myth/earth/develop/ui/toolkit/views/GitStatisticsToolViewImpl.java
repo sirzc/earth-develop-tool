@@ -15,6 +15,9 @@
 
 package com.myth.earth.develop.ui.toolkit.views;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.util.Disposer;
@@ -24,6 +27,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBLoadingPanel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+import com.intellij.util.concurrency.Semaphore;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.WrapLayout;
@@ -72,6 +76,7 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
     private final JButton                 statisticsButton;
     private final JButton                 copyButton;
     private final List<JBCheckBox>        authorCheckBoxList = new ArrayList<>(8);
+    private final Integer                 DEFAULT_WAIT_TIME  = 1000;
 
     public GitStatisticsToolViewImpl(@NotNull Project project) {
         super(project);
@@ -192,17 +197,40 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
      */
     private void loadRepositories() {
         repositoryBox.removeAllItems();
-        repositories = repositoryFinder.findRepositories();
-        if (!repositories.isEmpty()) {
-            for (GitRepository repo : repositories) {
-                repositoryBox.addItem(repo);
+        new Task.Backgroundable(project, "开始获取作者仓库信息", true) {
+            @Override
+            public void run(@NotNull ProgressIndicator progressIndicator) {
+                // 收集所有作者
+                Semaphore done = new Semaphore();
+                done.down();
+                ApplicationManager.getApplication().executeOnPooledThread(() -> {
+                    try {
+                        repositories = repositoryFinder.findRepositories();
+                    } finally {
+                        done.up();
+                    }
+                });
+
+                while (!done.waitFor(DEFAULT_WAIT_TIME)) {
+                    if (progressIndicator.isCanceled()) {
+                        break;
+                    }
+                }
+
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    if (!repositories.isEmpty()) {
+                        for (GitRepository repo : repositories) {
+                            repositoryBox.addItem(repo);
+                        }
+                        // 自动选择主仓库
+                        GitRepository mainRepo = repositories.stream().filter(GitRepository::isMainRepository).findFirst().orElse(repositories.get(0));
+                        repositoryBox.setSelectedItem(mainRepo);
+                    } else {
+                        refreshErrorTip("未识别到仓库信息，可刷新重试！");
+                    }
+                });
             }
-            // 自动选择主仓库
-            GitRepository mainRepo = repositories.stream().filter(GitRepository::isMainRepository).findFirst().orElse(repositories.get(0));
-            repositoryBox.setSelectedItem(mainRepo);
-        } else {
-            refreshErrorTip("未识别到仓库信息，可刷新重试！");
-        }
+        }.queue();
     }
 
     private void loadBranch() {
