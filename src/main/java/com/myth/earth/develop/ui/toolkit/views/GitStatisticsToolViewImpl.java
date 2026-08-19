@@ -15,9 +15,6 @@
 
 package com.myth.earth.develop.ui.toolkit.views;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.util.Disposer;
@@ -27,11 +24,11 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBLoadingPanel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
-import com.intellij.util.concurrency.Semaphore;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.WrapLayout;
 import com.intellij.util.ui.components.BorderLayoutPanel;
+import com.myth.earth.develop.builder.BackgroundTaskBuilder;
 import com.myth.earth.develop.kit.ClipboardKit;
 import com.myth.earth.develop.service.git.*;
 import com.myth.earth.develop.ui.intellij.MyDarculaComboBoxUI;
@@ -197,40 +194,20 @@ public class GitStatisticsToolViewImpl extends AbstractToolView {
      */
     private void loadRepositories() {
         repositoryBox.removeAllItems();
-        new Task.Backgroundable(project, "开始获取作者仓库信息", true) {
-            @Override
-            public void run(@NotNull ProgressIndicator progressIndicator) {
-                // 收集所有作者
-                Semaphore done = new Semaphore();
-                done.down();
-                ApplicationManager.getApplication().executeOnPooledThread(() -> {
-                    try {
-                        repositories = repositoryFinder.findRepositories();
-                    } finally {
-                        done.up();
-                    }
-                });
-
-                while (!done.waitFor(DEFAULT_WAIT_TIME)) {
-                    if (progressIndicator.isCanceled()) {
-                        break;
-                    }
-                }
-
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    if (!repositories.isEmpty()) {
-                        for (GitRepository repo : repositories) {
-                            repositoryBox.addItem(repo);
-                        }
-                        // 自动选择主仓库
-                        GitRepository mainRepo = repositories.stream().filter(GitRepository::isMainRepository).findFirst().orElse(repositories.get(0));
-                        repositoryBox.setSelectedItem(mainRepo);
-                    } else {
-                        refreshErrorTip("未识别到仓库信息，可刷新重试！");
-                    }
-                });
-            }
-        }.queue();
+        BackgroundTaskBuilder.create(project, "开始获取作者仓库信息")
+                             .execute(i -> repositories = repositoryFinder.findRepositories())
+                             .onComplete(i -> {
+                                    if (!repositories.isEmpty()) {
+                                        for (GitRepository repo : repositories) {
+                                            repositoryBox.addItem(repo);
+                                        }
+                                        // 自动选择主仓库
+                                        GitRepository mainRepo = repositories.stream().filter(GitRepository::isMainRepository).findFirst().orElse(repositories.get(0));
+                                        repositoryBox.setSelectedItem(mainRepo);
+                                    } else {
+                                        refreshErrorTip("未识别到仓库信息，可刷新重试！");
+                                    }
+                             }).queue();
     }
 
     private void loadBranch() {
