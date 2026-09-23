@@ -126,6 +126,7 @@ public class QrCodeBuildViewImpl extends AbstractToolView {
     private void reset() {
         textField.setText(null);
         qrLabel.setIcon(null);
+        qrLabel.setText(null);
         optionBox.setSelectedItem(300);
     }
 
