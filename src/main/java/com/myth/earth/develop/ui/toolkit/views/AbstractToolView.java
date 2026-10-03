@@ -25,6 +25,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
+import com.myth.earth.develop.ui.component.MyLabelButton;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -196,5 +197,41 @@ public abstract class AbstractToolView extends JPanel implements ToolView {
         public String getColor() {
             return color;
         }
+    }
+
+    /**
+     * 创建一个带按钮的panel
+     *
+     * @param text 显示内容
+     * @param component 容器
+     * @param buttons 按钮内容
+     * @return label +  button + panel
+     */
+    protected static JPanel createBoxButtonPanel(@NotNull String text, @NotNull JComponent component, MyLabelButton... buttons) {
+        JPanel labelPanel = new JPanel(new BorderLayout());
+        labelPanel.setBorder(IdeBorderFactory.createBorder());
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        if (buttons != null) {
+            for (MyLabelButton button : buttons) {
+                button.setPreferredSize(JBUI.size(25));
+                buttonPanel.add(button);
+            }
+            buttonPanel.add(Box.createHorizontalStrut(5));
+        }
+
+        JBLabel label = new JBLabel(text);
+        label.setBorder(JBUI.Borders.emptyLeft(10));
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setPreferredSize(JBUI.size(-1, 35));
+        topPanel.add(label, BorderLayout.WEST);
+        topPanel.add(buttonPanel, BorderLayout.EAST);
+
+        component.setBorder(new CustomLineBorder(JBUI.insetsTop(1)));
+        labelPanel.add(topPanel, BorderLayout.NORTH);
+        labelPanel.add(component, BorderLayout.CENTER);
+        return labelPanel;
     }
 }
