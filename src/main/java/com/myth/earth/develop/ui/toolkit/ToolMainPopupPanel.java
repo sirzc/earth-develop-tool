@@ -31,6 +31,7 @@ import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
+import com.intellij.ui.components.panels.VerticalLayout;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.HtmlPanel;
 import com.intellij.util.ui.JBUI;
@@ -45,7 +46,6 @@ import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import com.myth.earth.develop.ui.toolkit.core.ToolView;
 import icons.PluginIcons;
-import org.jdesktop.swingx.VerticalLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -137,7 +137,7 @@ public class ToolMainPopupPanel extends BorderLayoutPanel implements Disposable,
 
     public void initWelcomePanel() {
         List<String> hideToolKits = ToolkitGlobalState.getInstance().getHideToolKits();
-        JPanel verticalPanel = new JPanel(new VerticalLayout());
+        JPanel verticalPanel = new JPanel(new VerticalLayout(0));
         for (Map.Entry<ToolCategory, List<Class<? extends ToolView>>> entry : toolCategoryListMap.entrySet()) {
             ToolCategory category = entry.getKey();
             JPanel cardPanels = new JPanel(new WrapLayout(WrapLayout.LEFT, 5, 5));

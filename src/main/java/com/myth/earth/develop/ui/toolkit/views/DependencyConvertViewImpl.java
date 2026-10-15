@@ -22,6 +22,7 @@ import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
+import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.common.DependencyStyle;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
@@ -29,7 +30,6 @@ import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import com.myth.earth.develop.utils.DependencyConverter;
 import com.myth.earth.develop.utils.DependencyParser;
 import org.apache.commons.lang3.StringUtils;
-import org.jdesktop.swingx.HorizontalLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

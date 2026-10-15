@@ -18,6 +18,7 @@ package com.myth.earth.develop.ui.toolkit.views;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBTextArea;
+import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.kit.ClipboardKit;
@@ -25,7 +26,6 @@ import com.myth.earth.develop.ui.intellij.MyDarculaComboBoxUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
 import org.apache.commons.text.StringEscapeUtils;
-import org.jdesktop.swingx.HorizontalLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -68,7 +68,7 @@ public class StringEscapeViewImpl extends AbstractToolView {
         // optionBoxPanel.setBackground(COMBOBOX_COLOR);
         optionBoxPanel.add(optionBox, BorderLayout.CENTER);
 
-        JPanel topPanel = new JPanel(new HorizontalLayout());
+        JPanel topPanel = new JPanel(new HorizontalLayout(0));
         topPanel.setBorder(JBUI.Borders.empty());
         topPanel.add(createLineLabelPanel(80, "文本类型", optionBoxPanel));
         topPanel.add(Box.createHorizontalStrut(5));

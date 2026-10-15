@@ -25,12 +25,12 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.ui.components.JBTextField;
+import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.myth.earth.develop.ui.intellij.MyDarculaComboBoxUI;
 import com.myth.earth.develop.ui.toolkit.core.Tool;
 import com.myth.earth.develop.ui.toolkit.core.ToolCategory;
-import org.jdesktop.swingx.HorizontalLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -117,7 +117,7 @@ public class TextEnDecodeToolViewImpl extends AbstractToolView {
         // optionBoxPanel.setBackground(COMBOBOX_COLOR);
         optionBoxPanel.add(optionBox, BorderLayout.CENTER);
 
-        JPanel topPanel = new JPanel(new HorizontalLayout());
+        JPanel topPanel = new JPanel(new HorizontalLayout(0));
         topPanel.setBorder(JBUI.Borders.empty());
         topPanel.add(createLineLabelPanel(80, "加密方式", optionBoxPanel));
         topPanel.add(Box.createHorizontalStrut(5));

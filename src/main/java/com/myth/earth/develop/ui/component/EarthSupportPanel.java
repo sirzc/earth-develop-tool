@@ -21,8 +21,8 @@ import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.panels.NonOpaquePanel;
+import com.intellij.ui.components.panels.VerticalLayout;
 import com.intellij.util.ui.JBUI;
-import org.jdesktop.swingx.VerticalLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -46,7 +46,7 @@ public class EarthSupportPanel extends JBPanel<EarthSupportPanel> {
     }
 
     protected JComponent createCenterPanel() {
-        JPanel rootPanel = new NonOpaquePanel(new VerticalLayout());
+        JPanel rootPanel = new NonOpaquePanel(new VerticalLayout(0));
         rootPanel.setBorder(IdeBorderFactory.createEmptyBorder(JBUI.insets(5)));
         rootPanel.add(new JBLabel("<html><body style='color:orange;font-weight:bold;width: 440px'>感谢您对Earth系列插件的认可，earth系列插件致力于解决研发过程中遇到的难点、痛点，简化研发流程，减少重复作业的枯燥，增强编程乐趣。</body></html>"));
         rootPanel.add(Box.createVerticalStrut(10));
